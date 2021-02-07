@@ -1,1 +1,1 @@
-SpotifyPlaylistMaker
+Makes spotify playlists
