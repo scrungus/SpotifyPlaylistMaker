@@ -8,7 +8,8 @@ Make sure when you run a command you run it in this terminal
 now run 
 python -m ensurepip
 python -m pip install pip -U
+python -m pip install -r  put the path to requirements.txt here
 
-
+Now this should have installed all the packages
 
 Not too sure on how to do it on linux but i assume its easier.
