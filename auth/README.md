@@ -1,6 +1,6 @@
 # Guide
-run the app on port 8000 by running 'python main.py'.
+Start the app on port 8000 by running 'python main.py'. Best to run in a venv.
 
-Check you have the requirements necessary in 'requirements.txt'
+Check you have the requirements necessary in 'requirements.txt'.
 
-go to the /login page to login
+Go to the /login page to login.
