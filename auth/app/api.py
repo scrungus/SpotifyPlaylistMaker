@@ -71,7 +71,7 @@ def parse(url):
     if state==urlstate:
         print("VALID RESPONSE")
     else:
-        print("XSS ATTACK DETECTED!")
+        print("CSRF ATTACK DETECTED!")
 
     code = url[url.find('=')+1:url.rfind('&')]
     print("CODE FOUND :",code)
