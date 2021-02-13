@@ -4,6 +4,9 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 
 In CMD go to the Scripts folder and run:
 activate.bat
+then your command line should look like this:
+(python-virtual-environments)
+now run install.bat in this new command line
 this should install it all for you
 
 
