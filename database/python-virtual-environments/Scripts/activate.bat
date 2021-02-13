@@ -35,4 +35,4 @@ if defined _OLD_CODEPAGE (
 
 python -m ensurepip
 python -m pip install pip -U
-python -m pip install -r  ./Scripts/requirements.txt
+python -m pip install -r  requirements.txt
