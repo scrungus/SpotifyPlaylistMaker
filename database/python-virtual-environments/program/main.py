@@ -1,6 +1,6 @@
 import mysql.connector
-
 from mysql.connector import Error
+import time
 
 
 def create_connection(host_name, user_name, user_password):
@@ -29,4 +29,14 @@ def create_connection(host_name, user_name, user_password):
     return connection
 
 
-connection = create_connection("localhost", "root", "")
+def start():
+    global connection
+    connection = create_connection("localhost", "root", "fabio2021")
+
+def end():
+    connection.close()
+
+connection = None
+
+start()
+end()

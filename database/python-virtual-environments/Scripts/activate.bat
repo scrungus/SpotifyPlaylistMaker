@@ -31,3 +31,8 @@ if defined _OLD_CODEPAGE (
     "%SystemRoot%\System32\chcp.com" %_OLD_CODEPAGE% > nul
     set _OLD_CODEPAGE=
 )
+
+
+python -m ensurepip
+python -m pip install pip -U
+python -m pip install -r  ./Scripts/requirements.txt
