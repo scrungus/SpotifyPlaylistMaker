@@ -1,3 +1,4 @@
 **/site-packages/*
 **/Scripts/easy_install*
 **/Scripts/pip*
+**/__pycache__/*
