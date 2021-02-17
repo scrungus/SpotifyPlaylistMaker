@@ -5,6 +5,7 @@ import spotipy
 from spotipy import oauth2
 from fastapi.responses import RedirectResponse
 import uuid
+import json
 
 STATE_LENGTH=16
 
@@ -30,35 +31,40 @@ app.add_middleware(
 )
 
 print("STATE : ",state)
-sp_oauth = oauth2.SpotifyOAuth( clientID, clientSecret,redirectURI,scope=scopes,cache_path='.spotipyoauthcache',state=state)
+sp_oauth = oauth2.SpotifyOAuth( clientID, clientSecret,redirectURI,scope=scopes,cache_path='./auth/app/.spotipyoauthcache',state=state)
 
 @app.get("/",tags=["root"])
 async def root(request : Request):
     access_token = ""
 
-    token_info = sp_oauth.get_cached_token()
-
-    if token_info:
+    try:
+        token_info = sp_oauth.get_cached_token()
         print("Found cached token!")
         access_token = token_info['access_token']
-    else:
+    except: 
+        print("Cache empty, trying url...")
         url = str(request.query_params)
-        print("url is :",url)
+        print("URL IS :",url)
         code = parse(url)
-        print("CODE IS ",code)
+        print("CODE IS :",code)
         if code and code != '/':
             print("Found Spotify auth code in URL! Trying to get access token...")
-            token_info = sp_oauth.get_access_token(code)
-            access_token = token_info['access_token']
+            try:
+                token_info = sp_oauth.get_access_token(code)
+                access_token = token_info['access_token']
+            except:
+                print("Invalid Access Token!")
 
     if access_token:
         print("Access token found! Getting user info...")
         sp = spotipy.Spotify(access_token)
         results = sp.current_user()
+        results.update({'access_token': access_token})
+        print("Success!")
         return results
 
     else:
-        return "No Access Token."
+        return "None or Invalid Access Token."
 
 @app.get("/login",tags=['login'])
 async def login():
@@ -70,8 +76,12 @@ def parse(url):
     print("STATE FOUND : ",urlstate)
     if state==urlstate:
         print("VALID RESPONSE")
+    elif urlstate.isspace() or not urlstate:
+        print("NO CODE IN URL")
+        return
     else:
         print("CSRF ATTACK DETECTED!")
+        print("STATE: '",state,"', URLSTATE: '",urlstate,"'")
 
     code = url[url.find('=')+1:url.rfind('&')]
     print("CODE FOUND :",code)

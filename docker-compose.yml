@@ -1,0 +1,15 @@
+version: '3.9'  # version of compose format 
+
+services:
+  auth-service:
+    build: ./auth  # path is relative to docker-compose.yml location
+    volumes:
+      - ./auth:/usr/src/app # mount point
+    deploy:
+      resources:
+        limits:
+          memory: 500M
+        reservations:
+          memory: 100M
+    ports:
+      - 8000:8000  # host:container
