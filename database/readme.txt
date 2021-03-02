@@ -24,3 +24,8 @@ post          | addGroupPlaylist    | None                  | link (string)     
               |                     |                       | id (int)                  |
 get           | getUserPlaylists    | id (int)              |            None           |         
 get           | getGroupPlaylist    | id (int)              |            None           |
+post          | addGroup            | None                  | name (str)                |
+              |                     |                       | creatorID                 |
+post          | addGroupMember      | None                  | groupCode (str)           |
+              |                     |                       | userID (int)              | 
+get           | getGroupMembers     | groupCode (str)       |            None           |
