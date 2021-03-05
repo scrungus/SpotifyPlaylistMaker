@@ -1,1 +1,1 @@
-this handles the andriod front end
+this handles the android front end
