@@ -89,7 +89,6 @@ def parse(url):
 #creates a playlist and fills it with some songs
 @app.get("/createplaylist", tags=['createplaylist'])
 async def test():
-    sp_oauth.get_access_token()
     sp = spotipy.Spotify(auth=sp_oauth.get_access_token()['access_token'], auth_manager=SpotifyClientCredentials())
     sp.user_playlist_create(username, 'test', public=False, collaborative=False, description='description')
     playlist = sp.artist_top_tracks('spotify:artist:36QJpDe2go2KgaRleHCDTp')
