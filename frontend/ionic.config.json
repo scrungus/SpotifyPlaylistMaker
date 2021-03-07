@@ -1,0 +1,7 @@
+{
+  "name": "Spotify Playlist Maker",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react"
+}
