@@ -18,8 +18,10 @@ state = str(uuid.uuid4()).replace("-","")[0:STATE_LENGTH]
 app = FastAPI()
 
 origins = [
-    "http://localhost:3000",
-    "localhost:3000"
+    "http://localhost:8001",
+    "localhost:8001",
+    "0.0.0.0:8001",
+    "http://0.0.0.0:8001",
 ]
 
 app.add_middleware(
@@ -70,6 +72,9 @@ async def root(request : Request):
 async def login():
     return RedirectResponse(sp_oauth.get_authorize_url())
 
+@app.get("/test", tags=['test'])
+async def test(request : Request):
+    return "success!"
 
 def parse(url):
     urlstate = url[url.rfind('=')+1:]

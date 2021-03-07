@@ -7,6 +7,10 @@ from spotipy.oauth2 import SpotifyClientCredentials
 from fastapi.responses import RedirectResponse
 import uuid
 import os
+<<<<<<< HEAD
+import http3
+=======
+>>>>>>> master
 
 STATE_LENGTH=16
 
@@ -19,12 +23,20 @@ scopes = 'user-read-private user-read-email user-library-modify user-library-rea
 state = str(uuid.uuid4()).replace("-","")[0:STATE_LENGTH]
 # username hard coded in atm, but we will get the name from the database
 username = 'yatintanna'
+<<<<<<< HEAD
+client = http3.AsyncClient()
+=======
+>>>>>>> master
 
 app = FastAPI()
 token = ''
 origins = [
+<<<<<<< HEAD
+    'dwboutthisbro'
+=======
     "http://localhost:3000",
     "localhost:3000"
+>>>>>>> master
 ]
 
 app.add_middleware(
@@ -89,6 +101,10 @@ def parse(url):
 #creates a playlist and fills it with some songs
 @app.get("/createplaylist", tags=['createplaylist'])
 async def test():
+<<<<<<< HEAD
+=======
+    sp_oauth.get_access_token()
+>>>>>>> master
     sp = spotipy.Spotify(auth=sp_oauth.get_access_token()['access_token'], auth_manager=SpotifyClientCredentials())
     sp.user_playlist_create(username, 'test', public=False, collaborative=False, description='description')
     playlist = sp.artist_top_tracks('spotify:artist:36QJpDe2go2KgaRleHCDTp')
@@ -108,7 +124,11 @@ async def test():
 #adds some songs to an existing playlist
 @app.get("/editplaylist", tags=['editplaylist'])
 async def addtoplaylist():
+<<<<<<< HEAD
+    sp = spotipy.Spotify(auth=sp_oauth.get_access_token()['access_token'], auth_manager=SpotifyClientCredentials())
+=======
     sp = spotipy.Spotify(auth=sp_oauth.get_access_token()['access_token'], auth_manager=SpotifyClientCredentials());
+>>>>>>> master
     playlists = sp.user_playlists(username)
     for item in playlists['items']:
         if item['name'] == 'test':
@@ -116,4 +136,13 @@ async def addtoplaylist():
     tracks = ['spotify:track:2BjBfSbmAqqg4FumwVQYCV', 'spotify:track:0UAJH0k4k3slcE83a9UGCe']
     sp.playlist_add_items(id, tracks)
 
+<<<<<<< HEAD
     return "playlist edited successfully"
+
+@app.get("/test", tags=['test'])
+async def test(request : Request):
+    return (await client.get('http://spotifyplaylistmaker_auth_1:8000/test')).text
+    
+=======
+    return "playlist edited successfully"
+>>>>>>> master
