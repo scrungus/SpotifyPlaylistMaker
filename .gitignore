@@ -3,3 +3,5 @@
 **/Scripts/pip*
 **/__pycache__/*
 uvicorn.exe
+
+**/node_modules/*
