@@ -12,20 +12,25 @@ now run install.bat in this new command line
 this should install it all for you
 
 ----API-----
-request type  |     route name      |       parameters      |       request body        |
-get           | getUserByUsername   | username (string)     |            None           |
-get           | getUserByID         | id (int)              |            None           |
-post          | addUser             | None                  | username (string)         |
-              |                     |                       | spotifyAuth(string or "") |
-              |                     |                       | spotifyID (string)        |
-post          | addUserPlaylist     | None                  | link (string)             |
-              |                     |                       | id (int)                  |          
-post          | addGroupPlaylist    | None                  | link (string)             |
-              |                     |                       | id (int)                  |
-get           | getUserPlaylists    | id (int)              |            None           |         
-get           | getGroupPlaylist    | id (int)              |            None           |
-post          | addGroup            | None                  | name (str)                |
-              |                     |                       | creatorID                 |
-post          | addGroupMember      | None                  | groupCode (str)           |
-              |                     |                       | userID (int)              | 
-get           | getGroupMembers     | groupCode (str)       |            None           |
+request type|     route name            |       parameters      |       request body        |
+get         | getUserByUsername         | username (string)     |            None           |
+get         | getUserByID               | id (int)              |            None           |
+get         | getUserBySpotifyID        | spotifyID (str)       |            None           |
+post        | addUser                   | None                  | username (string)         |
+            |                           |                       | spotifyAuth(string or "") |
+            |                           |                       | spotifyID (string)        |
+post        | addUserPlaylist           | None                  | link (string)             |
+            |                           |                       | id (int)                  |          
+post        | addGroupPlaylist          | None                  | link (string)             |
+            |                           |                       | id (int)                  |
+get         | getUserPlaylists          | id (int)              |            None           |         
+get         | getGroupPlaylist          | id (int)              |            None           |
+post        | addGroup                  | None                  | name (str)                |
+            |                           |                       | creatorID                 |
+post        | addGroupMember            | None                  | groupCode (str)           |
+            |                           |                       | userID (int)              | 
+get         | getGroupMembers           | groupCode (str)       |            None           |
+get         | getUsersGroupsByID        | id (int)              |            None           |
+get         | getUsersGroupsByUsername  | username (str)        |            None           |
+get         | getUsersGroupsBySpotifyID | spotifyID (str)       |            None           |
+

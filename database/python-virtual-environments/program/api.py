@@ -32,6 +32,10 @@ async def getUserByID(id : str):
 async def getUserByUsername(username : str):
     return db.getUser(username=username)
 
+@app.get("/getUserBySpotifyID", tags=["getUserBySpotifyID"])
+async def getUserBySpotifyID(spotifyID: str):
+    return db.getUser(spotifyID=spotifyID)
+
 #Structure of post requests are defined as classes as such:
 class addUserRequest(BaseModel):
     username: str
@@ -80,6 +84,18 @@ async def addGroupMember(req: AddGroupMemberRequest):
 @app.get("/getGroupMembers", tags=["getGroupMembers"])
 async def getGroupMembers(groupCode: str):
     return db.getGroupMembers(groupCode)
+
+@app.get("/getUsersGroupsByID", tags=["getUserGroupsByID"])
+async def getUsersGroupsByID(id: int):
+    return db.getUsersGroups(id=id)
+
+@app.get("/getUsersGroupsByUsername", tags=["getUserGroupsByUsername"])
+async def getUsersGroupsByUsername(username: str):
+    return db.getUsersGroups(username=username)
+
+@app.get("/getUsersGroupsBySpotifyID", tags=["getUserGroupsBySpotifyID"])
+async def getUsersGroupsBySpotifyID(spotifyID: str):
+    return db.getUsersGroups(spotify_id=spotifyID)
     
 
     
