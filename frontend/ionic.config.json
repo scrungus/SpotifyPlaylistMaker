@@ -1,8 +1,7 @@
 {
-  "name": "myApp",
+  "name": "Spotify Playlist Maker",
   "integrations": {
     "capacitor": {}
   },
-  "type": "react",
-  "id": "e1544c06"
+  "type": "react"
 }
