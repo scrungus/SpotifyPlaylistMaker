@@ -2,6 +2,6 @@
 **/Scripts/easy_install*
 **/Scripts/pip*
 **/__pycache__/*
-uvicorn.exe
 
 **/node_modules/*
+uvicorn.exe

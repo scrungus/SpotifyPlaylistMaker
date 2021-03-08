@@ -15,7 +15,19 @@ def hashBack(code):
         code.encode("ascii")
     ).decode("ascii"))
 
-
+#Once data is returned from the database it is just an array, so this takes in the information and puts it into
+#a dictionary so its clearer which data is which
+def userDataFormat(id=None, username=None, spotify_auth=None, spotify_id=None):
+    data = {}
+    if(id != None):
+        data["id"] = id
+    if(username != None):
+        data["username"] = username
+    if(spotify_auth != None):
+        data["spotify_auth"] = spotify_auth
+    if(spotify_id != None):
+        data["spotify_id"] = spotify_id
+    return data
 
 
 class DatabaseConnector:
@@ -62,13 +74,18 @@ class DatabaseConnector:
         else:
             return res[0]
 
-    def getUser(self, id=None, username=None):
+    def getUser(self, id=None, username=None, spotifyID=None):
         if(id != None):
             sql = "SELECT * FROM users WHERE user_id = %(user_id)s"
             val = {"user_id": id}
-        else:
+        elif(spotifyID != None):
+            sql = "SELECT * FROM users WHERE spotify_id = %(spotify_id)s"
+            val = {"spotify_id": spotifyID}
+        elif(username != None):
             sql = "SELECT * FROM users WHERE username = %(username)s"
             val = {"username": username}
+        else:
+            return {"success": False, "data": None, "error": "No parameters set"}
 
         cursor = self.connection.cursor()
         cursor.execute(sql, val)
@@ -77,7 +94,10 @@ class DatabaseConnector:
         if(len(res) == 0):
             return {"success": False, "data": None, "error": "User doesnt exist"}
 
-        return {"success": True, "data": res, "error": ""}
+        return {
+            "success": True, 
+            "data": userDataFormat(id=res[0][0], username=res[0][1], spotify_auth=res[0][2], spotify_id=res[0][3]),
+            "error": ""}
 
     def addUser(self, username: str, spotifyID: str, spotifyAuth=None):
         sql = "INSERT INTO users (username, spotify_auth, spotify_id) VALUES (%(username)s, %(spotify_auth)s, %(spotify_id)s)"
@@ -166,26 +186,59 @@ class DatabaseConnector:
         cursor = self.connection.cursor()
         cursor.execute(sql, val)
         group = cursor.fetchall()
+        if(len(group) == 0):
+            return {"success": False, "data": None, "error": "group does not exist"}
 
         sql = "SELECT user_id FROM group_members WHERE group_id=%(group_id)s"
         val = {"group_id": groupID}
         cursor = self.connection.cursor()
         cursor.execute(sql, val)
         userIDs = cursor.fetchall()
+        userIDs.append([group[0][1]])
 
         users = []
         for ID in userIDs:
-            print(ID)
-            res = self.getUser(id=ID[0])["data"][0]
-            users.append({"id": res[0], "username": res[1]})
+            res = self.getUser(id=ID[0])["data"]
+            if(len(res) > 0):
+                users.append({"id": res["id"], "username": res["username"]})
+        
 
 
         return {
             "success": True, 
             "data": { 
-                "group": group, 
+                "group": {
+                    "name": group[0][0],
+                    "creator": group[0][1]
+                }, 
                 "users": users 
                 }, 
             "error": ""
         }
 
+    def getUsersGroups(self, id=None, username=None, spotify_id=None):
+        res = self.getUser(id=id, username=username, spotifyID=spotify_id)
+        if(res["success"] == False):
+            return res
+        user = res["data"]
+
+        sql = """
+            SELECT user_groups.group_id, user_groups.group_name 
+            FROM user_groups 
+            INNER JOIN group_members 
+            ON user_groups.group_id = group_members.group_id 
+            WHERE user_groups.creator=%(user_id)s 
+            OR group_members.user_id=%(user_id)s"""
+        val = {"user_id": user["id"]}
+
+        cursor = self.connection.cursor()
+        cursor.execute(sql, val)
+        res = cursor.fetchall()
+        out = []
+        for r in res:
+            out.append({
+                "group_code": hashForward(r[0]),
+                "group_name": r[1]
+            })
+
+        return {"success": True, "data": out, "error": None}
