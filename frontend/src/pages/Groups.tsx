@@ -16,15 +16,20 @@ import {
 } from '@ionic/react';
 import { add, close } from 'ionicons/icons';
 import GroupContainer from '../components/GroupContainer';
+// import { get, set, remove } from '../hooks/useGroupStorage';
+
 
 import './Groups.scss';
 import GroupView from '../components/GroupView';
 
 const Groups: React.FC = () => {
+
+  
   const groups = ["Test Group 1", "Test Group 2"];
 
   const [showModal, setShowModal] = useState(false);
   const [modalTitle, setModalTitle] = useState("");
+
   const getModal = (groupName: string) => {
     setModalTitle(groupName);
     setShowModal(true);

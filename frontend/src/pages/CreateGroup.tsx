@@ -19,34 +19,29 @@ import {
   IonItemOptions,
 } from '@ionic/react';
 import { add, people, checkmark } from 'ionicons/icons';
-import { get, set, remove } from '../hooks/useGroupStorage';
-import { displayGroup, useGroupStorage, Group, User } from '../hooks/useGroupStorage';
+import { useGroupStorage } from '../hooks/useGroupStorage';
 
 import './CreateGroup.css';
 
 const CreateGroup: React.FC = () => {
-  // const { createGroup, addMember, removeMember } = useGroupStorage();
+  // Testing purposes, will be redundant once data is pulled from db
+  const { saveGroup } = useGroupStorage();
 
-  const [noGroupName, toggleNoGroupName] = useState(true);
   const [groupName, setGroupName] = useState("");
-  const [members, setMembers] = useState<any>([]);
+  const [members, setMembers] = useState<string[]>([]);
 
   const groupNameRef = useRef<HTMLIonInputElement>(null);
   const membersRef = useRef<HTMLIonInputElement>(null);
 
-  const cacheGroupName = (name: string) => {
-    setGroupName(name);
-    toggleNoGroupName(false);
-  }
-
+  // Local modfications, no commits to Storage
   const newMember = () => {
-    const newMember = membersRef.current!.value;
+    const newMember = membersRef.current!.value?.toString()!;
     membersRef.current!.value = "";
     if (newMember === "") {
       alert("Enter a username");
       return;
     }
-    const newMembers = [newMember, ...members];
+    const newMembers = [...members, newMember];
     console.log(newMembers);
     setMembers(newMembers);
   }
@@ -68,7 +63,7 @@ const CreateGroup: React.FC = () => {
       </IonHeader>
       <IonContent fullscreen>
         <IonFab vertical="top" horizontal="end" slot="fixed" edge>
-          <IonFabButton onClick={() => console.log("Group done")}>
+          <IonFabButton onClick={() => saveGroup(groupName, members)} href="./groups">
             <IonIcon icon={checkmark}/>
           </IonFabButton>
         </IonFab>
@@ -78,7 +73,7 @@ const CreateGroup: React.FC = () => {
           </IonFabButton>
         </IonFab>
         <IonIcon style={{ fontSize: "70px"}} icon={people}/>
-        {noGroupName && (
+        {!groupName && (
           <IonItem>
             <IonInput 
               ref={groupNameRef}
@@ -86,7 +81,7 @@ const CreateGroup: React.FC = () => {
               placeholder="Group Name"
             >
             </IonInput>
-            <IonButton onClick={() => cacheGroupName(groupNameRef.current!.value?.toString()!)}>
+            <IonButton onClick={() => setGroupName(groupNameRef.current!.value?.toString()!)}>
               Set name
             </IonButton>
           </IonItem>
@@ -97,7 +92,6 @@ const CreateGroup: React.FC = () => {
 
           </IonCard>
         )}
-        {/* <IonButton onClick={() => console.log(get("groupNames"))}> */}
         <IonInput
           ref={membersRef}
           type="text"
