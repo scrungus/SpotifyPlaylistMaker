@@ -1,6 +1,7 @@
-import { IonContent, IonItem, IonHeader, IonList, IonPage, IonTitle, IonToolbar, IonIcon, IonLabel, IonToggle } from '@ionic/react';
+import { IonContent, IonItem, IonHeader, IonList, IonPage, IonTitle, IonToolbar, IonIcon, IonLabel, IonToggle, IonButton } from '@ionic/react';
 import ExploreContainer from '../components/ExploreContainer';
 import { moon } from 'ionicons/icons';
+import { sendGetRequest } from '../hooks/spotifyAPI';
 import './Settings.css';
 
 const Settings: React.FC = () => {
@@ -25,6 +26,10 @@ const Settings: React.FC = () => {
               name="darkMode"
               onIonChange={toggleDarkModeHandler}
             />
+          </IonItem>
+          <IonItem>
+            {/* TODO remove button */}
+            <IonButton onClick={sendGetRequest}>Send Request</IonButton>
           </IonItem>
         </IonList>
         <ExploreContainer name="Tab 3 page" />

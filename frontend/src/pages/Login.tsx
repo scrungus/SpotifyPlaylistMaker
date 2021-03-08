@@ -1,20 +1,12 @@
-import React, { useState, useContext } from "react";
+import { useContext } from "react";
 import {
     IonContent,
-    IonHeader,
     IonPage,
-    IonTitle,
-    IonToolbar,
-    IonRow,
-    IonCol,
     IonIcon,
-    IonItem,
     IonLabel,
-    IonInput,
     IonButton,
 } from '@ionic/react';
 
-import * as utils from '../hooks/useGroupStorage'
 
 import { personCircle } from 'ionicons/icons'
 
@@ -73,7 +65,7 @@ const Login: any = () => {
             <br></br><br></br><br></br>
             <IonButton onClick={loginClick} >
               <img src="https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg"
-                width="25" />
+                width="25" alt="Spotify Logo"/>
               <IonLabel>Use Spotify</IonLabel>
             </IonButton>
           </div>

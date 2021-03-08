@@ -32,9 +32,11 @@ import './theme/variables.css';
 interface IUserManager {
   setIsLoggedIn: Function;
 }
+
 const user: IUserManager = {
   setIsLoggedIn: () => {}
 };
+
 export const UserContext = React.createContext<IUserManager>(user);
 
 const IonicApp: React.FC = () => {

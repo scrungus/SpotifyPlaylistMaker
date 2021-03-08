@@ -46,6 +46,7 @@ const CreateGroup: React.FC = () => {
     setMembers(newMembers);
   }
 
+  // TODO remove button is not always responsive, 
   const removeMember = (member: string) => {
     const index = members.indexOf(member);
     console.log(index);
