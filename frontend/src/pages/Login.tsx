@@ -1,22 +1,25 @@
-import React from 'react'
-import { 
+import React, { useState, useContext } from "react";
+import {
     IonContent,
-    IonHeader, 
-    IonPage, 
-    IonTitle, 
-    IonToolbar, 
-    IonRow, 
-    IonCol, 
-    IonIcon, 
+    IonHeader,
+    IonPage,
+    IonTitle,
+    IonToolbar,
+    IonRow,
+    IonCol,
+    IonIcon,
     IonItem,
-    IonLabel, 
-    IonInput, 
-    IonButton, 
+    IonLabel,
+    IonInput,
+    IonButton,
 } from '@ionic/react';
 
 import * as utils from '../hooks/useGroupStorage'
 
 import { personCircle } from 'ionicons/icons'
+
+// CSS stuff to centralise the UI.
+import './Login.css';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -34,51 +37,56 @@ import '@ionic/react/css/text-transformation.css';
 import '@ionic/react/css/flex-utils.css';
 import '@ionic/react/css/display.css';
 
+// This lets the login page flag that the user has logged in.
+import { UserContext } from "../App";
+
 /* Theme variables */
-// import '../theme/variables.css';
+import '../theme/variables.css';
 
 const Login: any = () => {
+
+  /* This part allows the user to log in if they use a valid username
+     and password. We want probably want to make the request to the
+     auth service from here. */
+
+  //const [userName, setUserName] = useState<string>("");
+  //const [password, setPassword] = useState<string>("");
+  const user = useContext(UserContext);
+
+  const loginClick = () => {
+    //setBusy(true);
+    //if (userName === "a" && password === "a") {
+    user.setIsLoggedIn(true);
+    //} else {
+    //}
+    //setBusy(false);
+  };
+
   return (
     <IonPage>
-        <IonContent fullscreen>
-            <IonRow>
-                    <IonCol>
-                    <IonIcon
-                    style={{ fontSize: "70px", color: "#0040ff" }}
-                    icon={personCircle}
-                    />
-                </IonCol>
-            </IonRow>
-
-            <IonRow>
-                <IonCol>
-                    <IonItem>
-                        <IonLabel position="floating"> Email</IonLabel>
-                        <IonInput
-           type="email"
-                            // value={email}
-                            // onIonChange={(e) => utils.setEmail(e.detail.value!)}
-                            >
-                        </IonInput>
-                    </IonItem>
-                </IonCol>
-            </IonRow>
-
-            <IonRow>
-                <IonCol>
-                    <IonButton expand="block">Login</IonButton>
-                    <IonItem routerLink="/tab1">
-                        <IonLabel>Tab 1</IonLabel>
-                    </IonItem>
-                </IonCol>
-            </IonRow>
-        </IonContent>
-
-
-
-
+      <IonContent fullscreen>
+        <div className="fullheight xc">
+          <div className="vcs">
+            <h1>SpotifyPlaylistMaker</h1>
+            <IonIcon icon={personCircle}
+              style={{ fontSize: "70px", color: "#0040ff" }} />
+            <br></br><br></br><br></br>
+            <IonButton onClick={loginClick} >
+              <img src="https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg"
+                width="25" />
+              <IonLabel>Use Spotify</IonLabel>
+            </IonButton>
+          </div>
+        </div>
+      </IonContent>
     </IonPage>
   );
 };
+
+/* I'm keeping this here in case we decide to use it in the future.
+<IonItem>
+  <IonLabel position="floating">Email</IonLabel>
+  <IonInput type="email"></IonInput>
+</IonItem> */
 
 export default Login;
