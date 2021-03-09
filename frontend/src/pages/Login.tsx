@@ -1,14 +1,15 @@
 import { useContext } from "react";
+import { InAppBrowser } from '@ionic-native/in-app-browser';
 import {
-    IonContent,
-    IonPage,
-    IonIcon,
-    IonLabel,
-    IonButton,
-} from '@ionic/react';
-
-
-import { personCircle } from 'ionicons/icons'
+  IonContent,
+  IonPage,
+  IonIcon,
+  IonLabel,
+  IonButton} 
+from '@ionic/react';
+import { sendGetRequest } from '../hooks/spotifyAPI';
+import { get } from '../hooks/useGroupStorage';
+import { personCircle } from 'ionicons/icons';
 
 // CSS stuff to centralise the UI.
 import './Login.css';
@@ -36,7 +37,6 @@ import { UserContext } from "../App";
 import '../theme/variables.css';
 
 const Login: any = () => {
-
   /* This part allows the user to log in if they use a valid username
      and password. We want probably want to make the request to the
      auth service from here. */
@@ -45,13 +45,32 @@ const Login: any = () => {
   //const [password, setPassword] = useState<string>("");
   const user = useContext(UserContext);
 
+  const redirect = async (url: string) => {
+    /*
+    Opens new tab with Spotify login. You need to have the
+    uvicorn server from the auth directory running locally.
+
+    '_blank' parameter should open browser in-app on mobile.
+    */
+    const browser = InAppBrowser.create(url, '_blank');
+    // Should be getting page HTML
+    browser.executeScript({
+      code: "document.getElementsByTagName('pre')[0].innerHTML"
+    }).then((value) => console.log(value));
+  }
+
   const loginClick = () => {
     //setBusy(true);
+    
     //if (userName === "a" && password === "a") {
-    user.setIsLoggedIn(true);
+    // user.setIsLoggedIn(true);
     //} else {
     //}
     //setBusy(false);
+
+    sendGetRequest();
+    const link = get("redirectLink");
+    link.then((value) => redirect(value));
   };
 
   return (

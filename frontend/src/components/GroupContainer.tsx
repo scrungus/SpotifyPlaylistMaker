@@ -1,11 +1,12 @@
-import './GroupContainer.css'
+import './GroupContainer.css';
 import { people } from 'ionicons/icons';
-import { IonItem, IonAvatar, IonLabel, IonImg, IonRow, IonThumbnail, IonTitle } from '@ionic/react';
+import { IonItem, IonImg, IonThumbnail, IonTitle } from '@ionic/react';
 
 interface ContainerProps {
   groupName: string;
 }
 
+// Group component for groups in Groups tab
 const GroupContainer: React.FC<ContainerProps> = props => {
   return (
     <IonItem>

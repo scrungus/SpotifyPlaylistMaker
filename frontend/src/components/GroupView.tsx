@@ -13,6 +13,7 @@ interface ContainerProps {
   groupName: string;
 }
 
+// Component displayed in modal after group is tapped in Groups tab
 const GroupView: React.FC<ContainerProps> = props => {
   const members = ["Eddie", "Jack", "Mark", "Bob"];
 
