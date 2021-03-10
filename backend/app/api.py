@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import spotipy
 from spotipy import oauth2, util
 from spotipy.oauth2 import SpotifyClientCredentials
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, HTMLResponse
 import uuid
 import os
 import http3
@@ -119,7 +119,7 @@ async def addtoplaylist():
 
     return "playlist edited successfully"
 
-@app.get("/test", tags=['test'])
+@app.get("/test", tags=['test'], response_class=HTMLResponse)
 async def test(request : Request):
-    return (await client.get('http://spotifyplaylistmaker_auth_1:8000/login')).text
+    return HTMLResponse((await client.get('http://spotifyplaylistmaker_auth_1:8000/login')).text,status_code=200)
     
