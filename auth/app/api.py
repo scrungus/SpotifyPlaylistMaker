@@ -5,13 +5,15 @@ import spotipy
 from spotipy import oauth2
 from fastapi.responses import RedirectResponse
 import uuid
+import os
 import json
 
 STATE_LENGTH=16
 
 clientID = 'cfbac69fc1fb41f28dd001bf8f2114b9'
 clientSecret = '3ec8cd1f469647afa658904334e760ce'
-redirectURI = 'http://localhost:8000/'
+redirect_uri = 'http://localhost:3000/'
+os.environ['SPOTIPY_REDIRECT_URI'] = 'http://localhost:3000/'
 scopes = 'user-read-private user-read-email user-library-modify user-library-read'
 state = str(uuid.uuid4()).replace("-","")[0:STATE_LENGTH]
 
@@ -25,6 +27,10 @@ origins = [
     "http://localhost:3000",
     "0.0.0.0:3000",
     "http://0.0.0.0:3000",
+    "spotifyplaylistmaker_frontend_1:3000",
+    "http://spotifyplaylistmaker_frontend_1:3000",
+    "spotifyplaylistmaker_backend_1:8001",
+    "http://spotifyplaylistmaker_backend_1:8001",
 ]
 
 app.add_middleware(
@@ -36,29 +42,22 @@ app.add_middleware(
 )
 
 print("STATE : ",state)
-sp_oauth = oauth2.SpotifyOAuth( clientID, clientSecret,redirectURI,scope=scopes,cache_path='./auth/app/.spotipyoauthcache',state=state)
+sp_oauth = oauth2.SpotifyOAuth( clientID, clientSecret,redirect_uri,scope=scopes,cache_path=None,state=state)
 
 @app.get("/",tags=["root"])
 async def root(request : Request):
     access_token = ""
-
-    try:
-        token_info = sp_oauth.get_cached_token()
-        print("Found cached token!")
-        access_token = token_info['access_token']
-    except: 
-        print("Cache empty, trying url...")
-        url = str(request.query_params)
-        print("URL IS :",url)
-        code = parse(url)
-        print("CODE IS :",code)
-        if code and code != '/':
-            print("Found Spotify auth code in URL! Trying to get access token...")
-            try:
-                token_info = sp_oauth.get_access_token(code)
-                access_token = token_info['access_token']
-            except:
-                print("Invalid Access Token!")
+    url = str(request.query_params)
+    print("URL IS :",url)
+    code = parse(url)
+    print("CODE IS :",code)
+    if code and code != '/':
+        print("Found Spotify auth code in URL! Trying to get access token...")
+        try:
+            token_info = sp_oauth.get_access_token(code)
+            access_token = token_info['access_token']
+        except:
+            print("Invalid Access Token!")
 
     if access_token:
         print("Access token found! Getting user info...")
@@ -71,11 +70,12 @@ async def root(request : Request):
     else:
         return "None or Invalid Access Token."
 
-@app.get("/login",tags=['login'])
+@app.get("/api/login",tags=['login'])
 async def login():
+    sp_oauth = oauth2.SpotifyOAuth( clientID, clientSecret,redirect_uri,scope=scopes,cache_path=None,state=state)
     return RedirectResponse(sp_oauth.get_authorize_url())
 
-@app.get("/test", tags=['test'])
+@app.get("/api/test", tags=['test'])
 async def test(request : Request):
     return "success!"
 

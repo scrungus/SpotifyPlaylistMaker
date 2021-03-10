@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
 
-import server_interface
+from . import server_interface
 
 db : server_interface.DatabaseConnector #defines the type of this variable
 db = server_interface.DatabaseConnector() #Inits connection with server
@@ -13,7 +13,22 @@ app = FastAPI()
 
 origins = [
     "http://localhost:3000",
-    "localhost:3000"
+    "localhost:3000",
+    "http://localhost:8001",
+    "localhost:8001",
+    "0.0.0.0:8001",
+    "http://0.0.0.0:8001",
+    "http://localhost:8000",
+    "localhost:8000",
+    "0.0.0.0:8000",
+    "http://0.0.0.0:8000",
+    "spotifyplaylistmaker_frontend_1:3000",
+    "http://spotifyplaylistmaker_frontend_1:3000",
+    "spotifyplaylistmaker_backend_1:8001",
+    "http://spotifyplaylistmaker_backend_1:8001",
+    "spotifyplaylistmaker_auth_1:8000",
+    "http://spotifyplaylistmaker_auth_1:8000",
+
 ]
 
 app.add_middleware(

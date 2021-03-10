@@ -13,6 +13,7 @@ RUN apk --no-cache --update --virtual build-dependencies add \
     && apk del build-dependencies
 
 RUN npm install -g ionic
+RUN npm install http-proxy-middleware --save
 RUN npm install
 
 COPY . /usr/src/app/
