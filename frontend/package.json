@@ -4,6 +4,8 @@
   "private": true,
   "dependencies": {
     "@capacitor/core": "2.4.7",
+    "@ionic-native/core": "^5.31.1",
+    "@ionic-native/in-app-browser": "^5.31.1",
     "@ionic/react": "^5.5.0",
     "@ionic/react-router": "^5.5.0",
     "@ionic/storage": "^2.3.1",
@@ -16,7 +18,9 @@
     "@types/react-dom": "^16.9.10",
     "@types/react-router": "^5.1.11",
     "@types/react-router-dom": "^5.1.7",
+    "cordova-plugin-inappbrowser": "^5.0.0",
     "ionicons": "^5.4.0",
+    "node-sass": "^5.0.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-router": "^5.2.0",

@@ -1,4 +1,15 @@
-import { IonContent, IonItem, IonHeader, IonList, IonPage, IonTitle, IonToolbar, IonIcon, IonLabel, IonToggle } from '@ionic/react';
+import { 
+  IonContent, 
+  IonItem, 
+  IonHeader, 
+  IonList, 
+  IonPage, 
+  IonTitle, 
+  IonToolbar, 
+  IonIcon, 
+  IonLabel, 
+  IonToggle 
+} from '@ionic/react';
 import ExploreContainer from '../components/ExploreContainer';
 import { moon } from 'ionicons/icons';
 import './Settings.css';
