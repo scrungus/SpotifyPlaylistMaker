@@ -25,3 +25,13 @@ services:
           memory: 100M
     ports:
       - 8001:8001  # host:container
+  frontend:
+    build: ./frontend
+    deploy:
+      resources:
+        limits:
+          memory: 500M
+        reservations:
+          memory: 100M
+    ports:
+      - 3000:3000  # host:container 
