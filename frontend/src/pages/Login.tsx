@@ -5,9 +5,9 @@ import {
   IonPage,
   IonIcon,
   IonLabel,
-  IonButton} 
-from '@ionic/react';
-import { sendGetRequest } from '../hooks/spotifyAPI';
+  IonButton
+} from '@ionic/react';
+import { authRequest } from '../hooks/requestManager';
 import { get } from '../hooks/useGroupStorage';
 import { personCircle } from 'ionicons/icons';
 
@@ -60,17 +60,17 @@ const Login: any = () => {
   }
 
   const loginClick = () => {
-    //setBusy(true);
+    // setBusy(true);
     
     //if (userName === "a" && password === "a") {
-    // user.setIsLoggedIn(true);
+    user.setIsLoggedIn(true);
     //} else {
     //}
     //setBusy(false);
 
-    sendGetRequest();
-    const link = get("redirectLink");
-    link.then((value) => redirect(value));
+    // authRequest();
+    // const link = get("redirectLink");
+    // link.then((value) => redirect(value));
   };
 
   return (
@@ -82,7 +82,7 @@ const Login: any = () => {
             <IonIcon icon={personCircle}
               style={{ fontSize: "70px", color: "#0040ff" }} />
             <br></br><br></br><br></br>
-            <IonButton onClick={loginClick} >
+            <IonButton onClick={loginClick}>
               <img src="https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg"
                 width="25" alt="Spotify Logo"/>
               <IonLabel>Use Spotify</IonLabel>

@@ -16,7 +16,7 @@ import {
 } from '@ionic/react';
 import { add, close } from 'ionicons/icons';
 import GroupContainer from '../components/GroupContainer';
-// import { get, set, remove } from '../hooks/useGroupStorage';
+import { sendRequest } from '../hooks/requestManager';
 
 
 import './Groups.scss';
@@ -65,6 +65,14 @@ const Groups: React.FC = () => {
               <GroupContainer groupName={group}/>
             </IonItem>
           ))}
+          <IonItem>
+            <IonButton onClick={() => {
+              // Example GET request
+              const params = { username: "ben" };
+              sendRequest("GET", "getUserByUsername", params, "user");
+            }}>
+            Send Request</IonButton>
+          </IonItem>
         </IonList>
       </IonContent>
     </IonPage>
