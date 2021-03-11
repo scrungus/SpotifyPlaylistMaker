@@ -7,7 +7,7 @@ import {
   IonLabel,
   IonButton} 
 from '@ionic/react';
-import { sendGetRequest } from '../hooks/spotifyAPI';
+import { SendGetRequest } from '../hooks/spotifyAPI';
 import { get } from '../hooks/useGroupStorage';
 import { personCircle } from 'ionicons/icons';
 
@@ -68,7 +68,7 @@ const Login: any = () => {
     //}
     //setBusy(false);
 
-    sendGetRequest();
+    SendGetRequest();
     const link = get("redirectLink");
     link.then((value) => redirect(value));
   };

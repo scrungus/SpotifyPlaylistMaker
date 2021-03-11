@@ -1,13 +1,12 @@
 import { set } from './useGroupStorage';
 
-export function sendGetRequest() {  
-  const http = new XMLHttpRequest();
+export async function SendGetRequest() {  
   const url = "/api/login";
-  http.open("GET", url);
-  http.setRequestHeader("Access-Control-Allow-Origin", "https://accounts.spotify.com/");
-  http.setRequestHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  http.send();
   
+  const resp = await fetch(url, {method : 'GET', redirect : 'follow'})
+
+  window.location.href = resp.url;
+
   /* http.onreadystatechange = (e) => {
     set("redirectLink", http.responseURL);
   } */

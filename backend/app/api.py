@@ -121,5 +121,5 @@ async def addtoplaylist():
 
 @app.get("/test", tags=['test'], response_class=HTMLResponse)
 async def test(request : Request):
-    return HTMLResponse((await client.get('http://spotifyplaylistmaker_auth_1:8000/login')).text,status_code=200)
+    return HTMLResponse((await client.get('http://spotifyplaylistmaker_auth_1:8000/api/login')).text,status_code=200)
     
