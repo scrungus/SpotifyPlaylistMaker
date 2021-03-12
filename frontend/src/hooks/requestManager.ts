@@ -11,7 +11,7 @@ function parse(dict: any) {
 
 export function authRequest() {
   const http = new XMLHttpRequest();
-  const url = "http://localhost:8000/login";
+  const url = "http://localhost:8000/api/login";
   http.open("GET", url);
   http.send();
   

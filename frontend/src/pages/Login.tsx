@@ -52,11 +52,11 @@ const Login: any = () => {
 
     '_blank' parameter should open browser in-app on mobile.
     */
-    const browser = InAppBrowser.create(url, '_blank');
+    /* const browser = InAppBrowser.create(url, '_blank');
     // Should be getting page HTML
     browser.executeScript({
       code: "document.getElementsByTagName('pre')[0].innerHTML"
-    }).then((value) => console.log(value));
+    }).then((value) => console.log(value)); */
   }
 
   const loginClick = () => {
@@ -68,9 +68,9 @@ const Login: any = () => {
     //}
     //setBusy(false);
 
-    // authRequest();
-    // const link = get("redirectLink");
-    // link.then((value) => redirect(value));
+    authRequest();
+    const link = get("redirectLink");
+    link.then((value) => redirect(value));
   };
 
   return (
