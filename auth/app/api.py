@@ -12,7 +12,7 @@ STATE_LENGTH=16
 
 clientID = 'cfbac69fc1fb41f28dd001bf8f2114b9'
 clientSecret = '3ec8cd1f469647afa658904334e760ce'
-redirect_uri = 'http://localhost:8000/callback/'
+redirect_uri = 'http://localhost:8000/api/callback/'
 scopes = 'user-read-private user-read-email user-library-modify user-library-read'
 state = str(uuid.uuid4()).replace("-","")[0:STATE_LENGTH]
 
