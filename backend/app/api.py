@@ -4,9 +4,10 @@ from fastapi.middleware.cors import CORSMiddleware
 import spotipy
 from spotipy import oauth2, util
 from spotipy.oauth2 import SpotifyClientCredentials
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, HTMLResponse
 import uuid
 import os
+import http3
 
 STATE_LENGTH=16
 
@@ -19,12 +20,12 @@ scopes = 'user-read-private user-read-email user-library-modify user-library-rea
 state = str(uuid.uuid4()).replace("-","")[0:STATE_LENGTH]
 # username hard coded in atm, but we will get the name from the database
 username = 'yatintanna'
+client = http3.AsyncClient()
 
 app = FastAPI()
 token = ''
 origins = [
-    "http://localhost:3000",
-    "localhost:3000"
+    'dwboutthisbro'
 ]
 
 app.add_middleware(
@@ -108,7 +109,7 @@ async def test():
 #adds some songs to an existing playlist
 @app.get("/editplaylist", tags=['editplaylist'])
 async def addtoplaylist():
-    sp = spotipy.Spotify(auth=sp_oauth.get_access_token()['access_token'], auth_manager=SpotifyClientCredentials());
+    sp = spotipy.Spotify(auth=sp_oauth.get_access_token()['access_token'], auth_manager=SpotifyClientCredentials())
     playlists = sp.user_playlists(username)
     for item in playlists['items']:
         if item['name'] == 'test':
@@ -117,3 +118,8 @@ async def addtoplaylist():
     sp.playlist_add_items(id, tracks)
 
     return "playlist edited successfully"
+
+@app.get("/test", tags=['test'], response_class=HTMLResponse)
+async def test(request : Request):
+    return HTMLResponse((await client.get('http://spotifyplaylistmaker_auth_1:8000/api/login')).text,status_code=200)
+    
