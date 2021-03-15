@@ -27,14 +27,14 @@ export function sendRequest(type: "GET" | "POST", route: string, params_or_body:
   switch (type) {
     case "GET": {
       const params = parse(params_or_body);
-      const url = `http://localhost:8001/${route}?${params}`;
+      const url = `http://localhost:8002/${route}?${params}`;
       http.open(type, url);
       http.send();
       break;
     }
     case "POST": {
       const body = JSON.stringify(params_or_body);
-      const url = `http://localhost:8001/${route}`;
+      const url = `http://localhost:8002/${route}`;
       http.open(type, url);
       http.send(body);
       break;
