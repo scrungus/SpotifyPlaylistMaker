@@ -10,21 +10,25 @@ interface Playlist {
   icon: null
 }
 
+async function getPlaylistData(link: string){
+
+}
+
 async function getPlaylists(userID: number) {
   const http = new XMLHttpRequest();
   //let url = "http://" + process.env.REACT_APP_DB_URL + `/getUserPlaylists?id=${userID}`;
-  let url = `http://localhost:8002/getUserPlaylists?id=${userID}`;
+  //let url = `http://localhost:8002/getUserPlaylists?id=${userID}`;
+  let url = process.env.REACT_APP_DB_URL + `/getUserPlaylists?id=${userID}`;
+  console.log(url);
   http.open("GET", url);
   http.send()
 
-  let prom = new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     http.onload = () => {
       console.log(http.response);
       resolve(http.response);
     }
   });
-
-  return prom;
 }
 
 type PlaylistsState = {
@@ -73,8 +77,7 @@ class Playlists extends React.Component<{}, PlaylistsState> {
                     <PlaylistBox name={"name"} link={play[1]} icon={"icon"}></PlaylistBox>
                   </IonItem>
                 )
-              }
-              )
+              })
             }
           </IonList>
         </IonContent>
