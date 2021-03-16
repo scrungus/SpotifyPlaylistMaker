@@ -7,6 +7,7 @@ import {
 import { IonReactRouter } from '@ionic/react-router';
 import MainTabs from './pages/MainTabs';
 import Login from './pages/Login';
+import CreateGroup from './pages/CreateGroup'
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -51,8 +52,9 @@ const IonicApp: React.FC = () => {
     <IonApp>
       <IonReactRouter>
         <IonRouterOutlet>
-          <Route exact path="/login" component={Login} />
+          <Route exact path="/login" component={CreateGroup} />
           <Route path="/" component={isLoggedIn ? MainTabs : Login} />
+          <Route exact path="/create_group" component={CreateGroup} />
         </IonRouterOutlet>
       </IonReactRouter>
     </IonApp>
