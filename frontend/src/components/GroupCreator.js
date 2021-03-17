@@ -14,11 +14,9 @@ import {
   IonTitle,
 } from '@ionic/react';
 import { arrowBack, checkmark, people } from 'ionicons/icons';
-//import { useGroupStorage } from '../hooks/useGroupStorage';
+import { sendRequest } from '../hooks/requestManager';
 
 class GroupCreator extends Component {
-  // Testing purposes, will be redundant once data is pulled from db
-  //const { saveGroup } = useGroupStorage();
 
   state = {
     group: "New Group",
@@ -56,18 +54,32 @@ class GroupCreator extends Component {
     });
   }
 
-  back = () => {
-    if (this.state.members.length==0) {
-      alert("Go back.");
-    } else {
-      alert("Save the group and go back.");
+  // TODO: Replace these with the proper requests and remove the alerts.
+  saveGroup = () => {
+    const gName = this.state.group;
+    const mems = this.state.members;
+    if (mems.length==0) {
+      alert(gName+" has no members, so it can't be created. Going back to Groups page.");
+      return;
     }
+
+    alert("Create \""+gName+"\".");
+    const bodyGroup = { name: gName, creatorID: mems[0] };
+    sendRequest("POST", "addGroup", bodyGroup, "group");
+
+    mems.forEach(function (mem) {
+      alert("Add \""+mem+"\" to "+gName+".");
+      const bodyMem = { groupCode: gName, userID: mem };
+      sendRequest("POST", "addGroupMember", bodyMem, "group");
+    });
+
+    alert("Going back to Groups page.");
   }
 
   render() {
     return (<>
       <IonFab vertical="top" horizontal="end" slot="fixed" edge>
-        <IonFabButton onClick={() => this.back()} href="./groups">
+        <IonFabButton onClick={() => this.saveGroup()} href="./groups">
           <IonIcon icon={this.state.members.length==0?arrowBack:checkmark}/>
         </IonFabButton>
       </IonFab>
@@ -89,7 +101,7 @@ class GroupCreator extends Component {
         </IonItem>
         <IonList>
           {this.state.members.map((member: string, index: number) => (
-            <IonItem>
+            <IonItem key={member}>
               <IonLabel>{member}</IonLabel>
               <IonButton color="danger" onClick={() => this.subMember(index)}>Remove</IonButton>
             </IonItem>

@@ -48,11 +48,13 @@ const IonicApp: React.FC = () => {
   const user = useContext(UserContext);
   user.setIsLoggedIn = setIsLoggedIn;
 
+  // TODO: Make logging in persist across page loads/reloads,
+  // then remove the exact path="/create_group" line.
   return (
     <IonApp>
       <IonReactRouter>
         <IonRouterOutlet>
-          <Route exact path="/login" component={CreateGroup} />
+          <Route exact path="/login" component={Login} />
           <Route path="/" component={isLoggedIn ? MainTabs : Login} />
           <Route exact path="/create_group" component={CreateGroup} />
         </IonRouterOutlet>
