@@ -18,7 +18,7 @@ redirect_uri = 'http://localhost:8000/api/callback/'
 scopes = 'user-read-private user-read-email user-library-modify user-library-read'
 state = str(uuid.uuid4()).replace("-","")[0:STATE_LENGTH]
 
-app = FastAPI()
+app = FastAPI(debug=True)
 
 origins = [
     "http://localhost:8001",
@@ -78,16 +78,10 @@ async def callback(request : Request):
         print("Access token found! Getting user info...")
         sp = spotipy.Spotify(access_token)
         results = sp.current_user()
-        print(results['display_name'])
-        print(results['id'])
+
         results.update({'access_token': access_token})
-        datas = {
-            'display_name' : results['display_name'],
-            'id' : results['id'],
-            'access_code' : access_token
-        }
-        httpx.post('http://spotifyplaylistmaker_database_1:8002/addUser',data=datas)
-        httpx.post('http://spotifyplaylistmaker_database_1:8002/test',data="yeet")
+
+        httpx.post('http://spotifyplaylistmaker_database_1:8002/addUser',json=results)   
         print("Success!")
 
     else:

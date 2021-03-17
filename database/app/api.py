@@ -3,13 +3,14 @@ from starlette.requests import Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
+from typing import Dict,Any
 
 from . import server_interface
 
 db : server_interface.DatabaseConnector #defines the type of this variable
 db = server_interface.DatabaseConnector() #Inits connection with server
 
-app = FastAPI()
+app = FastAPI(debug=True)
 
 origins = [
     "http://localhost:3000",
@@ -53,18 +54,12 @@ async def getUserBySpotifyID(spotifyID: str):
 
 #Structure of post requests are defined as classes as such:
 class addUserRequest(BaseModel):
-    display_name: str
-    id: str
-    access_code: str
+    body : dict
 
 @app.post("/addUser",tags=["addUser"])
-async def addUser(req : addUserRequest):
+async def addUser(req : Dict[Any,Any]):
     print("new user added!")
-    return db.addUser(req.display_name, req.id, req.access_code)
-
-@app.post("/test",tags=["test"])
-async def addUser(req : str):
-    print(req)
+    return db.addUser(req['display_name'], req['id'], req['access_token'])
 
 class addPlaylistRequest(BaseModel):
     link: str

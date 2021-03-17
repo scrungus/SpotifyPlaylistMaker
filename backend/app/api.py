@@ -22,7 +22,7 @@ state = str(uuid.uuid4()).replace("-","")[0:STATE_LENGTH]
 username = 'yatintanna'
 client = http3.AsyncClient()
 
-app = FastAPI()
+app = FastAPI(debug=True)
 token = ''
 origins = [
     'dwboutthisbro'
