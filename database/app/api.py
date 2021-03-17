@@ -53,12 +53,18 @@ async def getUserBySpotifyID(spotifyID: str):
 
 #Structure of post requests are defined as classes as such:
 class addUserRequest(BaseModel):
-    username: str
-    spotifyID: str
-    spotifyAuth: str
+    display_name: str
+    id: str
+    access_code: str
+
 @app.post("/addUser",tags=["addUser"])
 async def addUser(req : addUserRequest):
-    return db.addUser(req.username, req.spotifyID, req.spotifyAuth)
+    print("new user added!")
+    return db.addUser(req.display_name, req.id, req.access_code)
+
+@app.post("/test",tags=["test"])
+async def addUser(req : str):
+    print(req)
 
 class addPlaylistRequest(BaseModel):
     link: str
