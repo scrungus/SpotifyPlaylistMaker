@@ -18,7 +18,7 @@ redirect_uri = 'http://localhost:8000/api/callback/'
 scopes = 'user-read-private user-read-email user-library-modify user-library-read'
 state = str(uuid.uuid4()).replace("-","")[0:STATE_LENGTH]
 
-app = FastAPI(debug=True)
+app = FastAPI()
 
 origins = [
     "http://localhost:8001",
@@ -86,7 +86,7 @@ async def callback(request : Request):
 
     else:
         print("None or Invalid Access Token.")
-    return RedirectResponse("http://localhost:3000/")
+    return RedirectResponse("http://localhost:3000"+"?id="+results['id'])
 
 
 def parse(url):
