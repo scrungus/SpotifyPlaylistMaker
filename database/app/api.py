@@ -10,7 +10,7 @@ from . import server_interface
 db : server_interface.DatabaseConnector #defines the type of this variable
 db = server_interface.DatabaseConnector() #Inits connection with server
 
-app = FastAPI(debug=True)
+app = FastAPI()
 
 origins = [
     "http://localhost:3000",
