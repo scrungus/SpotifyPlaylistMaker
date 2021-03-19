@@ -112,8 +112,6 @@ class DatabaseConnector:
         return {"success": True, "error": ""}
 
     def getAllUser(self):
-
-        print("WINNER!!")
         sql = "SELECT * FROM users"
     
         cursor = self.connection.cursor()
