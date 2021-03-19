@@ -111,6 +111,24 @@ class DatabaseConnector:
         self.connection.commit()
         return {"success": True, "error": ""}
 
+    def getAllUser(self):
+
+        print("WINNER!!")
+        sql = "SELECT * FROM users"
+    
+        cursor = self.connection.cursor()
+        cursor.execute(sql)
+        res = cursor.fetchall()
+
+        if(len(res) == 0):
+            return {"success": False, "data": None, "error": "User doesnt exist"}
+
+        return ({
+            
+            "success": True, 
+            "data": userDataFormat(id=res[i][0], username=res[i][1], spotify_auth=res[i][2], spotify_id=res[i][3]),
+            "error": ""} for i in range(len(res)))
+
     def addPlaylist(self, link: str, userID=None, groupID=None):
         if(userID == None and groupID == None):
             return {"success": False, "error": "userID and groupID cannot both be blank"}

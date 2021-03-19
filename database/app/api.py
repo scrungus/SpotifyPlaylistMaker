@@ -44,6 +44,10 @@ app.add_middleware(
 async def getUserByID(id : str):
     return db.getUser(id=id)
 
+@app.get("/getAllUser", tags=["getAllUser"])
+async def getAllUser():
+    return db.getAllUser()
+
 @app.get("/getUserByUsername", tags=["getUserByUsername"])
 async def getUserByUsername(username : str):
     return db.getUser(username=username)
