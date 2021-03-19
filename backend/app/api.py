@@ -18,8 +18,9 @@ clientID = 'cfbac69fc1fb41f28dd001bf8f2114b9'
 os.environ['SPOTIPY_CLIENT_ID'] = 'cfbac69fc1fb41f28dd001bf8f2114b9'
 clientSecret = '3ec8cd1f469647afa658904334e760ce'
 os.environ['SPOTIPY_CLIENT_SECRET'] = '3ec8cd1f469647afa658904334e760ce'
-redirectURI = 'http://localhost:8000/'
-scopes = 'user-read-private user-read-email user-library-modify user-library-read playlist-modify-private playlist-read-private'
+redirectURI = 'http://localhost:8001/'
+os.environ['SPOTIPY_REDIRECT_URI'] = 'http://localhost:8001/'
+scopes = 'user-read-private user-read-email user-library-modify user-library-read user-top-read playlist-modify-private playlist-read-private user-follow-read user-read-recently-played'
 state = str(uuid.uuid4()).replace("-","")[0:STATE_LENGTH]
 client = httpx.AsyncClient()
 
@@ -53,7 +54,6 @@ app.add_middleware(
 )
 
 print("STATE : ",state)
-sp_oauth = oauth2.SpotifyOAuth( clientID, clientSecret,redirectURI,scope=scopes,cache_path='.spotipyoauthcache',state=state)
 
 #playlist code:
 
@@ -122,3 +122,37 @@ async def addtoplaylist(id : str, pid : str):
 
     return "playlist edited successfully"
     
+
+    # get 5 most common artists from each user
+    for grp_member in range(len(tokens)):
+        sp.append(spotipy.Spotify(tokens[grp_member], auth_manager=SpotifyOAuth(client_id=clientID, client_secret=clientSecret, redirect_uri=redirectURI, scope=scopes)))
+        sp[grp_member].user_playlist_create(usernames[grp_member], 'test13', public=False, collaborative=False, description='description')
+        allArtists = []
+        playlists = sp[grp_member].user_playlists(usernames[grp_member])
+        for playlist in playlists['items']:
+            if playlist['owner']['id'] == usernames[grp_member]:
+                results = sp[grp_member].user_playlist(usernames[grp_member], playlist['id'], fields="tracks")
+                tracks = results['tracks']
+                for item in tracks['items']:
+                    track = item['track']
+                    allArtists.append(track['artists'][0]['uri'])
+        reducedArtists += Counter(allArtists).most_common(5)
+    for i, artist in enumerate(reducedArtists):
+        reducedArtists[i] = reducedArtists[i][0]
+
+    # get recommendation for group
+    spot = spotipy.Spotify(tokens[0], auth_manager=SpotifyOAuth(client_id=clientID, client_secret=clientSecret, redirect_uri=redirectURI, scope=scopes))
+    tracks = spot.recommendations(seed_artists=reducedArtists, limit=20)
+    for track in tracks['tracks']:
+       track_list.append(track['uri'])
+
+    # add recommendation for all users
+    for grp_member in range(len(tokens)):
+        sp.append(spotipy.Spotify(tokens[grp_member], auth_manager=SpotifyOAuth(client_id=clientID, client_secret=clientSecret, redirect_uri=redirectURI, scope=scopes)))
+        playlists = spot.user_playlists(usernames[grp_member])
+        for item in playlists['items']:
+            if item['name'] == 'test13':
+                id = item['uri']
+        sp[grp_member].playlist_add_items(id, track_list)
+
+    return "playlist created successfully"
