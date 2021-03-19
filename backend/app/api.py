@@ -4,10 +4,12 @@ from fastapi.middleware.cors import CORSMiddleware
 import spotipy
 from spotipy import oauth2, util
 from spotipy.oauth2 import SpotifyClientCredentials
+from spotipy.oauth2 import SpotifyOAuth
 from fastapi.responses import RedirectResponse, HTMLResponse
 import uuid
 import os
 import http3
+from collections import Counter
 
 STATE_LENGTH=16
 
@@ -15,11 +17,11 @@ clientID = 'cfbac69fc1fb41f28dd001bf8f2114b9'
 os.environ['SPOTIPY_CLIENT_ID'] = 'cfbac69fc1fb41f28dd001bf8f2114b9'
 clientSecret = '3ec8cd1f469647afa658904334e760ce'
 os.environ['SPOTIPY_CLIENT_SECRET'] = '3ec8cd1f469647afa658904334e760ce'
-redirectURI = 'http://localhost:8000/'
-scopes = 'user-read-private user-read-email user-library-modify user-library-read playlist-modify-private playlist-read-private'
+redirectURI = 'http://localhost:8001/'
+os.environ['SPOTIPY_REDIRECT_URI'] = 'http://localhost:8001/'
+scopes = 'user-read-private user-read-email user-library-modify user-library-read user-top-read playlist-modify-private playlist-read-private user-follow-read user-read-recently-played'
 state = str(uuid.uuid4()).replace("-","")[0:STATE_LENGTH]
 # username hard coded in atm, but we will get the name from the database
-username = 'yatintanna'
 client = http3.AsyncClient()
 
 app = FastAPI()
@@ -37,40 +39,6 @@ app.add_middleware(
 )
 
 print("STATE : ",state)
-sp_oauth = oauth2.SpotifyOAuth( clientID, clientSecret,redirectURI,scope=scopes,cache_path='.spotipyoauthcache',state=state)
-
-@app.get("/",tags=["root"])
-async def root(request : Request):
-    access_token = ""
-
-    token_info = sp_oauth.get_cached_token()
-
-    if token_info:
-        print("Found cached token!")
-        access_token = token_info['access_token']
-    else:
-        url = str(request.query_params)
-        print("url is :",url)
-        code = parse(url)
-        print("CODE IS ",code)
-        if code and code != '/':
-            print("Found Spotify auth code in URL! Trying to get access token...")
-            token_info = sp_oauth.get_access_token(code)
-            access_token = token_info['access_token']
-
-    if access_token:
-        print("Access token found! Getting user info...")
-        sp = spotipy.Spotify(access_token)
-        print(access_token)
-        results = sp.current_user()
-        return results
-
-    else:
-        return "No Access Token."
-
-@app.get("/login",tags=['login'])
-async def login():
-    return RedirectResponse(sp_oauth.get_authorize_url())
 
 
 def parse(url):
@@ -85,41 +53,56 @@ def parse(url):
     print("CODE FOUND :",code)
     return code
 
-#playlist code:
 
 #creates a playlist and fills it with some songs
 @app.get("/createplaylist", tags=['createplaylist'])
-async def test():
-    sp = spotipy.Spotify(auth=sp_oauth.get_access_token()['access_token'], auth_manager=SpotifyClientCredentials())
-    sp.user_playlist_create(username, 'test', public=False, collaborative=False, description='description')
-    playlist = sp.artist_top_tracks('spotify:artist:36QJpDe2go2KgaRleHCDTp')
-    tracks = []
-    for track in playlist['tracks']:
-        t = track['uri']
-        tracks.append(track['uri'])
-    print(tracks)
-    playlists = sp.user_playlists(username)
-    for item in playlists['items']:
-        if item['name'] == 'test':
-            id = item['uri']
-    sp.playlist_add_items(id, tracks)
+async def createplaylist():
+    # get list of usernames and access tokens from database for group
+    # usernames and tokens should be appended to the usernames and tokens lists
+    # with usernames[n] corresponding to tokens[n]
+
+    usernames = []
+    tokens = []
+    sp = []
+
+
+    reducedArtists = []
+    track_list = []
+
+    # placeholders for testing
+    tokens.append('BQCBynWtrcQo9IY9qGT78M6TMS7wm4cBd5_oGPYdrDivDQLFkJlrKRdPALSTYzWZF7kEs83wkBKcOZulbKChTI9u6-2N_v9USx8lVvec_MrCHuAmxpDVbTOsjDvKFHK7utxfbu4VK7-PMiNusijJfLFhd7jSR82lZAbmCuxMMp3sGCTgzlazUMbjuRL5b1HF_Ack02doLUAg-xhMYSRjo1rD_lVjf3FRwSb-3OJ_ogNkguqyi5wBuedn')
+    usernames.append('yatintanna')
+
+    # get 5 most common artists from each user
+    for grp_member in range(len(tokens)):
+        sp.append(spotipy.Spotify(tokens[grp_member], auth_manager=SpotifyOAuth(client_id=clientID, client_secret=clientSecret, redirect_uri=redirectURI, scope=scopes)))
+        sp[grp_member].user_playlist_create(usernames[grp_member], 'test13', public=False, collaborative=False, description='description')
+        allArtists = []
+        playlists = sp[grp_member].user_playlists(usernames[grp_member])
+        for playlist in playlists['items']:
+            if playlist['owner']['id'] == usernames[grp_member]:
+                results = sp[grp_member].user_playlist(usernames[grp_member], playlist['id'], fields="tracks")
+                tracks = results['tracks']
+                for item in tracks['items']:
+                    track = item['track']
+                    allArtists.append(track['artists'][0]['uri'])
+        reducedArtists += Counter(allArtists).most_common(5)
+    for i, artist in enumerate(reducedArtists):
+        reducedArtists[i] = reducedArtists[i][0]
+
+    # get recommendation for group
+    spot = spotipy.Spotify(tokens[0], auth_manager=SpotifyOAuth(client_id=clientID, client_secret=clientSecret, redirect_uri=redirectURI, scope=scopes))
+    tracks = spot.recommendations(seed_artists=reducedArtists, limit=20)
+    for track in tracks['tracks']:
+       track_list.append(track['uri'])
+
+    # add recommendation for all users
+    for grp_member in range(len(tokens)):
+        sp.append(spotipy.Spotify(tokens[grp_member], auth_manager=SpotifyOAuth(client_id=clientID, client_secret=clientSecret, redirect_uri=redirectURI, scope=scopes)))
+        playlists = spot.user_playlists(usernames[grp_member])
+        for item in playlists['items']:
+            if item['name'] == 'test13':
+                id = item['uri']
+        sp[grp_member].playlist_add_items(id, track_list)
 
     return "playlist created successfully"
-
-#adds some songs to an existing playlist
-@app.get("/editplaylist", tags=['editplaylist'])
-async def addtoplaylist():
-    sp = spotipy.Spotify(auth=sp_oauth.get_access_token()['access_token'], auth_manager=SpotifyClientCredentials())
-    playlists = sp.user_playlists(username)
-    for item in playlists['items']:
-        if item['name'] == 'test':
-            id = item['uri']
-    tracks = ['spotify:track:2BjBfSbmAqqg4FumwVQYCV', 'spotify:track:0UAJH0k4k3slcE83a9UGCe']
-    sp.playlist_add_items(id, tracks)
-
-    return "playlist edited successfully"
-
-@app.get("/test", tags=['test'], response_class=HTMLResponse)
-async def test(request : Request):
-    return HTMLResponse((await client.get('http://spotifyplaylistmaker_auth_1:8000/api/login')).text,status_code=200)
-    
