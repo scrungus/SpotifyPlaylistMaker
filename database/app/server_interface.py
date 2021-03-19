@@ -54,9 +54,9 @@ class DatabaseConnector:
 
             print("Connection to MySQL DB successful")
 
-        except Error as e:
+        except mysql.connector.Error as err:
 
-            print(f"The error '{e}' occurred")
+            print(f"The error '{err}' occurred")
 
         return connection
 
