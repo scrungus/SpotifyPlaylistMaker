@@ -99,7 +99,7 @@ class DatabaseConnector:
             "data": userDataFormat(id=res[0][0], username=res[0][1], spotify_auth=res[0][2], spotify_id=res[0][3]),
             "error": ""}
 
-    def addUser(self, username: str, spotifyID: str, spotifyAuth=None):
+    def addUser(self, username: str, spotifyID: str, spotifyAuth=None, image=None):
         sql = "INSERT INTO users (username, spotify_auth, spotify_id) VALUES (%(username)s, %(spotify_auth)s, %(spotify_id)s)"
         val = {"username": username,
                "spotify_auth": spotifyAuth, "spotify_id": spotifyID}
