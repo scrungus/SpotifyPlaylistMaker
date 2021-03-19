@@ -11,17 +11,34 @@ interface Playlist {
 }
 
 async function getPlaylistData(link: string){
+  const http = new XMLHttpRequest();
+  let port = process.env.REACT_APP_BACKEND_PORT || "8001";
+  let domain = process.env.REACT_APP_SERVER_URL || "localhost";
+  let url = domain + ":" + port + `/getPlaylists?link=${link}`;
+  console.log(url);
+  http.open("GET", url);
+  http.withCredentials = true;
+  http.setRequestHeader("Content-Type", "application/json");
+  http.send();
 
+  return new Promise((resolve, reject) => {
+    http.onload = () => {
+      console.log(http.response);
+      resolve(http.response);
+    }
+  });
 }
 
 async function getPlaylists(userID: number) {
   const http = new XMLHttpRequest();
-  //let url = "http://" + process.env.REACT_APP_DB_URL + `/getUserPlaylists?id=${userID}`;
-  //let url = `http://localhost:8002/getUserPlaylists?id=${userID}`;
-  let url = process.env.REACT_APP_DB_URL + `/getUserPlaylists?id=${userID}`;
+  let port = process.env.REACT_APP_DB_PORT || "8002";
+  let domain = process.env.REACT_APP_SERVER_URL || "localhost";
+  let url = domain + ":" + port + `/getUserPlaylists?id=${userID}`;
   console.log(url);
   http.open("GET", url);
-  http.send()
+  http.withCredentials = true;
+  http.setRequestHeader("Content-Type", "application/json");
+  http.send();
 
   return new Promise((resolve, reject) => {
     http.onload = () => {
