@@ -78,7 +78,6 @@ async def callback(request : Request):
         print("Access token found! Getting user info...")
         sp = spotipy.Spotify(access_token)
         results = sp.current_user()
-
         results.update({'access_token': access_token})
 
         httpx.post('http://spotifyplaylistmaker_database_1:8002/addUser',json=results)   

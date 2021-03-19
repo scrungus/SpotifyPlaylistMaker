@@ -63,7 +63,7 @@ class addUserRequest(BaseModel):
 @app.post("/addUser",tags=["addUser"])
 async def addUser(req : Dict[Any,Any]):
     print("new user added!")
-    return db.addUser(req['display_name'], req['id'], req['access_token'])
+    return db.addUser(req['display_name'], req['id'], req['access_token'],req['images'][0]['url'])
 
 class addPlaylistRequest(BaseModel):
     link: str
