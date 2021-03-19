@@ -3,6 +3,7 @@ from starlette.requests import Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
+from typing import Dict,Any
 
 from . import server_interface
 
@@ -43,6 +44,10 @@ app.add_middleware(
 async def getUserByID(id : str):
     return db.getUser(id=id)
 
+@app.get("/getAllUser", tags=["getAllUser"])
+async def getAllUser():
+    return db.getAllUser()
+
 @app.get("/getUserByUsername", tags=["getUserByUsername"])
 async def getUserByUsername(username : str):
     return db.getUser(username=username)
@@ -53,12 +58,12 @@ async def getUserBySpotifyID(spotifyID: str):
 
 #Structure of post requests are defined as classes as such:
 class addUserRequest(BaseModel):
-    username: str
-    spotifyID: str
-    spotifyAuth: str
+    body : dict
+
 @app.post("/addUser",tags=["addUser"])
-async def addUser(req : addUserRequest):
-    return db.addUser(req.username, req.spotifyID, req.spotifyAuth)
+async def addUser(req : Dict[Any,Any]):
+    print("new user added!")
+    return db.addUser(req['display_name'], req['id'], req['access_token'])
 
 class addPlaylistRequest(BaseModel):
     link: str

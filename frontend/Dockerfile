@@ -3,6 +3,8 @@ FROM node:13-alpine as build
 
 WORKDIR /usr/src/app 
 
+ENV CHOKIDAR_USEPOLLING=true
+
 COPY package*.json /usr/src/app/
 
 RUN apk --no-cache --update --virtual build-dependencies add \
@@ -13,7 +15,6 @@ RUN apk --no-cache --update --virtual build-dependencies add \
     && apk del build-dependencies
 
 RUN npm install -g ionic
-RUN npm install http-proxy-middleware --save
 RUN npm install
 
 COPY . /usr/src/app/
