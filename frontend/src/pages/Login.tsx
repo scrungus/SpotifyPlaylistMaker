@@ -1,4 +1,5 @@
 import { useContext } from "react";
+import { InAppBrowser } from '@ionic-native/in-app-browser';
 import {
   IonContent,
   IonPage,
