@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   IonHeader,
   IonToolbar,
@@ -16,24 +16,42 @@ import {
 } from '@ionic/react';
 import { add, close } from 'ionicons/icons';
 import GroupContainer from '../components/GroupContainer';
+import { get } from '../hooks/useGroupStorage';
 import { sendRequest } from '../hooks/requestManager';
-
-
 import './Groups.scss';
 import GroupView from '../components/GroupView';
 
+interface Group {
+  group_code: string;
+  group_name: string;
+}
+
+async function getUsersGroups(userId: number | string): Promise<Group[]> {
+  const params = {
+    spotifyID: userId
+  }
+
+  sendRequest("GET", "getUsersGroupsBySpotifyID", params, "groups");
+  const groups = await get("groups");
+  return JSON.parse(groups)['data'];
+}
+
 const Groups: React.FC = () => {
-
-  
-  const groups = ["Test Group 1", "Test Group 2"];
-
+  const [groups, setGroups] = useState<Group[]>([]);
   const [showModal, setShowModal] = useState(false);
-  const [modalTitle, setModalTitle] = useState("");
+  const [selectedGroup, setSelectedGroup] = useState({group_code: "", group_name: ""});
 
-  const getModal = (groupName: string) => {
-    setModalTitle(groupName);
+  const getModal = (group: Group) => {
+    setSelectedGroup(group);
     setShowModal(true);
   }
+
+  useEffect(() => {
+    const groups_promise = getUsersGroups(1);
+    groups_promise.then((values) => {
+      setGroups(values);
+    });
+  }, []);
 
   return (
     <IonPage>
@@ -45,14 +63,14 @@ const Groups: React.FC = () => {
       <IonContent fullscreen>
         <IonModal isOpen={showModal} swipeToClose={true}>
           <IonToolbar>
-            <IonTitle>{modalTitle}</IonTitle>
+            <IonTitle>{selectedGroup.group_name}</IonTitle>
             <IonButtons slot="secondary">
               <IonButton onClick={() => setShowModal(false)}>
                 <IonIcon icon={close}/>
               </IonButton>
             </IonButtons>
           </IonToolbar>
-          <GroupView groupName={modalTitle}/>
+          <GroupView groupCode={selectedGroup.group_code} groupName={selectedGroup.group_name}/>
         </IonModal>
         <IonFab vertical="top" horizontal="end" slot="fixed" edge>
           <IonFabButton href="./create_group">
@@ -60,19 +78,11 @@ const Groups: React.FC = () => {
           </IonFabButton>
         </IonFab>
         <IonList>
-          {groups.map((group: string, index: number) => (
+          {groups.map((group, index: number) => (
             <IonItem key={index} onClick={() => getModal(group)}>
-              <GroupContainer groupName={group}/>
+              <GroupContainer groupName={group.group_name}/>
             </IonItem>
           ))}
-          <IonItem>
-            <IonButton onClick={() => {
-              // Example GET request
-              const params = { username: "ben" };
-              sendRequest("GET", "getUserByUsername", params, "user");
-            }}>
-            Send Request</IonButton>
-          </IonItem>
         </IonList>
       </IonContent>
     </IonPage>

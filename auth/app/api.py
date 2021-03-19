@@ -7,6 +7,8 @@ from fastapi.responses import RedirectResponse
 import uuid
 import os
 import json
+import httpx
+
 
 STATE_LENGTH=16
 
@@ -76,12 +78,15 @@ async def callback(request : Request):
         print("Access token found! Getting user info...")
         sp = spotipy.Spotify(access_token)
         results = sp.current_user()
+
         results.update({'access_token': access_token})
+
+        httpx.post('http://spotifyplaylistmaker_database_1:8002/addUser',json=results)   
         print("Success!")
 
     else:
         print("None or Invalid Access Token.")
-    return RedirectResponse("http://localhost:3000/")
+    return RedirectResponse("http://localhost:3000"+"?id="+results['id'])
 
 
 def parse(url):

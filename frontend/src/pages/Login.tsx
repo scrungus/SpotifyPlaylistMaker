@@ -1,5 +1,4 @@
 import { useContext } from "react";
-import { InAppBrowser } from '@ionic-native/in-app-browser';
 import {
   IonContent,
   IonPage,
@@ -52,24 +51,26 @@ const Login: any = () => {
 
     '_blank' parameter should open browser in-app on mobile.
     */
-    /* const browser = InAppBrowser.create(url, '_blank');
+    const browser = InAppBrowser.create(url,'_blank');
     // Should be getting page HTML
     browser.executeScript({
       code: "document.getElementsByTagName('pre')[0].innerHTML"
-    }).then((value) => console.log(value)); */
+    }).then((value) => console.log(value));
   }
 
   const loginClick = () => {
     // setBusy(true);
     
     //if (userName === "a" && password === "a") {
-    user.setIsLoggedIn(true);
+    //user.setIsLoggedIn(true);
     //} else {
     //}
     //setBusy(false);
 
     authRequest();
+
     const link = get("redirectLink");
+    console.log("link : ",link);
     link.then((value) => redirect(value));
   };
 
