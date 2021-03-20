@@ -36,42 +36,21 @@ import { UserContext } from "../App";
 import '../theme/variables.css';
 
 const Login: any = () => {
-  /* This part allows the user to log in if they use a valid username
-     and password. We want probably want to make the request to the
-     auth service from here. */
-
-  //const [userName, setUserName] = useState<string>("");
-  //const [password, setPassword] = useState<string>("");
   const user = useContext(UserContext);
 
-  const redirect = async (url: string) => {
-    /*
-    Opens new tab with Spotify login. You need to have the
-    uvicorn server from the auth directory running locally.
-
-    '_blank' parameter should open browser in-app on mobile.
-    */
-    const browser = InAppBrowser.create(url,'_blank');
-    // Should be getting page HTML
-    browser.executeScript({
-      code: "document.getElementsByTagName('pre')[0].innerHTML"
-    }).then((value) => console.log(value));
-  }
-
   const loginClick = () => {
-    // setBusy(true);
-    
-    //if (userName === "a" && password === "a") {
-    //user.setIsLoggedIn(true);
-    //} else {
-    //}
-    //setBusy(false);
-
     authRequest();
-
     const link = get("redirectLink");
-    console.log("link : ",link);
-    link.then((value) => redirect(value));
+    link.then((url) => {
+      const redirectWindow = window.open(url)!;
+      // Best I could do, only works after authentication
+      redirectWindow.addEventListener('pageshow', (e) => {
+        if (e) {
+          redirectWindow.close();
+          user.setIsLoggedIn(true);
+        }
+      });
+    });
   };
 
   return (
@@ -94,11 +73,5 @@ const Login: any = () => {
     </IonPage>
   );
 };
-
-/* I'm keeping this here in case we decide to use it in the future.
-<IonItem>
-  <IonLabel position="floating">Email</IonLabel>
-  <IonInput type="email"></IonInput>
-</IonItem> */
 
 export default Login;
