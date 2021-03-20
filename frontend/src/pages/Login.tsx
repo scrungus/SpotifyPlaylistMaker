@@ -10,6 +10,7 @@ import {
 import { authRequest } from '../hooks/requestManager';
 import { get } from '../hooks/useGroupStorage';
 import { personCircle } from 'ionicons/icons';
+import { RouteComponentProps } from 'react-router-dom';
 
 // CSS stuff to centralise the UI.
 import './Login.css';
@@ -36,7 +37,13 @@ import { UserContext } from "../App";
 /* Theme variables */
 import '../theme/variables.css';
 
-const Login: any = () => {
+interface UserDetailPageProps extends RouteComponentProps<{
+  id: string;
+}> {}
+
+const Login: React.FC<UserDetailPageProps> = ({match}) => {
+  console.log("login route");
+  console.log("id :: "+match.params.id);
   /* This part allows the user to log in if they use a valid username
      and password. We want probably want to make the request to the
      auth service from here. */
@@ -63,7 +70,7 @@ const Login: any = () => {
     // setBusy(true);
     
     //if (userName === "a" && password === "a") {
-    //user.setIsLoggedIn(true);
+    user.setIsLoggedIn(true);
     //} else {
     //}
     //setBusy(false);

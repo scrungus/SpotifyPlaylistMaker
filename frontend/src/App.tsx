@@ -55,7 +55,7 @@ const IonicApp: React.FC = () => {
       <IonReactRouter>
         <IonRouterOutlet>
           <Route exact path="/login" component={Login} />
-          <Route path="/" component={isLoggedIn ? MainTabs : Login} />
+          <Route path="/:id?" component={isLoggedIn ? MainTabs : Login} />
           <Route exact path="/create_group" component={CreateGroup} />
         </IonRouterOutlet>
       </IonReactRouter>

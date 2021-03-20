@@ -110,7 +110,7 @@ async def generatePlaylist(id : List[str] = Query(None)):
     return "playlist created successfully"
 
 #adds some songs to an existing playlist
-@app.get("/editplaylist", tags=['editplaylist'])
+""" @app.get("/editplaylist", tags=['editplaylist'])
 async def addtoplaylist(id : str, pid : str):
     sp = spotipy.Spotify(auth=sp_oauth.get_access_token()['access_token'], auth_manager=SpotifyClientCredentials())
     playlists = sp.user_playlists(username)
@@ -155,4 +155,4 @@ async def addtoplaylist(id : str, pid : str):
                 id = item['uri']
         sp[grp_member].playlist_add_items(id, track_list)
 
-    return "playlist created successfully"
+    return "playlist created successfully" """

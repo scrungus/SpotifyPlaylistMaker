@@ -85,7 +85,7 @@ async def callback(request : Request):
 
     else:
         print("None or Invalid Access Token.")
-    return RedirectResponse("http://localhost:3000"+"?id="+results['id'])
+    return RedirectResponse("http://localhost:3000/"+results['id'])
 
 
 def parse(url):
