@@ -5,6 +5,7 @@ from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
 from typing import Dict,Any
 import threading
+import traceback
 
 from . import server_interface
 import time
@@ -47,15 +48,13 @@ def keepConnectionAlive():
     while(True):
         time.sleep(10)
         try:
-            print("keep alive")
             cursor = db.connection.cursor()
             cursor.execute("SELECT 1")
-        except:
-            print("Connection Restart")
-            db.createConnection()
+        except Exception: 
+            db.connection.reconnect()
 
 
-keepAliveThread = threading.Thread(target=keepConnectionAlive)
+keepAliveThread = threading.Thread(target=keepConnectionAlive, daemon=True)
 keepAliveThread.start()
 
 @app.get("/getUserByID", tags=["getUserByID"])
