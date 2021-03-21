@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { 
   IonItemSliding,
   IonItemOptions,
@@ -7,10 +7,10 @@ import {
   IonContent, 
   IonTitle, 
   IonItem,
-  IonImg} from '@ionic/react';
+  IonImg,} from '@ionic/react';
 import { people } from 'ionicons/icons';
 import { get } from '../hooks/useGroupStorage';
-import { sendRequest } from '../hooks/requestManager';
+import { fileRequest, sendRequest } from '../hooks/requestManager';
 
 interface ContainerProps {
   groupCode: string;
@@ -32,8 +32,34 @@ async function getGroupMembers(groupCode: number | string): Promise<Member[]> {
   return JSON.parse(members)['data']['users'];
 }
 
-// Component displayed in modal after group is tapped in Groups tab
+/* async function getGroupPhoto(){
+  return people;
+}
+ */
+
+ // Component displayed in modal after group is tapped in Groups tab
 const GroupView: React.FC<ContainerProps> = props => {
+  /* const uploadedImage = useRef<typeof IonImg>(null);
+  const imageUploader = useRef<HTMLInputElement>(null); */
+
+  /*
+  function loadImageFromDevice(e) {
+  
+    const file = e.target.files[0];
+  
+    if (file) {
+      const reader = new FileReader();
+      const { current } = uploadedImage;
+      current.file = file;
+      reader.onload = e => {
+        current.src = e.target.result;
+        fileRequest('POST','',`{${file.name}: ${file}}`,'groupPhoto');
+      };
+      reader.readAsDataURL(file);
+    };
+  }; */
+  
+
   const [members, setMembers] = useState<Member[]>([]);
 
   useEffect(() => {
@@ -41,12 +67,16 @@ const GroupView: React.FC<ContainerProps> = props => {
     members_promise.then((values) => {
       setMembers(values);
     });
-  }, [props.groupCode]);
+  }, [props.groupCode])
 
   return (
     <IonContent color="light">
       <IonItem>
-        <IonImg src={people}></IonImg>
+      {/* <input ref={imageUploader} type="file" onChange={(e) => loadImageFromDevice(e)}
+          accept="image/*" style={{display: "none"}}>
+        </input> */}
+        <IonImg ref={uploadedImage} src={people} /* onClick={() => imageUploader.current.click()} */>
+        </IonImg>
       </IonItem>
       <IonTitle>Members</IonTitle>
       {members.map((member, index: number) => (
