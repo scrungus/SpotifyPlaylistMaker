@@ -4,8 +4,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
 from typing import Dict,Any
+import threading
 
 from . import server_interface
+import time
 
 db : server_interface.DatabaseConnector #defines the type of this variable
 db = server_interface.DatabaseConnector() #Inits connection with server
@@ -40,9 +42,21 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
-@app.use("/", tags=[""])
-async def checkConnection():
-    db.connection()
+def keepConnectionAlive():
+    print("Connection alive thread")
+    while(True):
+        time.sleep(10)
+        try:
+            print("keep alive")
+            cursor = db.connection.cursor()
+            cursor.execute("SELECT 1")
+        except:
+            print("Connection Restart")
+            db.createConnection()
+
+
+keepAliveThread = threading.Thread(target=keepConnectionAlive)
+keepAliveThread.start()
 
 @app.get("/getUserByID", tags=["getUserByID"])
 async def getUserByID(id : str):
