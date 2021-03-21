@@ -119,7 +119,6 @@ async def generatePlaylist(id : List[str] = Query(None)):
         if grp_member != 1:
             sp[grp_member].user_playlist_follow_playlist(usernames[grp_member], playlist_id=createdPlaylist['id'])
     a = spotipy.Spotify(tokens[0], auth_manager=SpotifyOAuth(client_id=clientID, client_secret=clientSecret, scope=scopes))
-    print(a.playlist(playlist_id=createdPlaylist['id'])['id'])
 
     # return playlist id
     return createdPlaylist['id']
