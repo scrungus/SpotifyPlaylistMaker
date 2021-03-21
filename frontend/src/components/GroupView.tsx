@@ -75,7 +75,7 @@ const GroupView: React.FC<ContainerProps> = props => {
       {/* <input ref={imageUploader} type="file" onChange={(e) => loadImageFromDevice(e)}
           accept="image/*" style={{display: "none"}}>
         </input> */}
-        <IonImg ref={uploadedImage} src={people} /* onClick={() => imageUploader.current.click()} */>
+        <IonImg /* ref={uploadedImage} */ src={people} /* onClick={() => imageUploader.current.click()} */>
         </IonImg>
       </IonItem>
       <IonTitle>Members</IonTitle>
