@@ -10,6 +10,7 @@ import {
 import { authRequest } from '../hooks/requestManager';
 import { get } from '../hooks/useGroupStorage';
 import { personCircle } from 'ionicons/icons';
+import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { RouteComponentProps } from 'react-router-dom';
 
 // CSS stuff to centralise the UI.

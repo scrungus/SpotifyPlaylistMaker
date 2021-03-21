@@ -40,6 +40,10 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
+@app.use("/", tags=[""])
+async def checkConnection():
+    db.connection()
+
 @app.get("/getUserByID", tags=["getUserByID"])
 async def getUserByID(id : str):
     return db.getUser(id=id)
