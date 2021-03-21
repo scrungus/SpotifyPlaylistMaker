@@ -7,4 +7,4 @@
 uvicorn.exe
 .idea/workspace.xml
 
-.cache
+**/.cache
