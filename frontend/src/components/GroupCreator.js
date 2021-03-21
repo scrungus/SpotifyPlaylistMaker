@@ -100,7 +100,7 @@ class GroupCreator extends Component {
           <IonTitle>Members ({this.state.members.length}):</IonTitle>
         </IonItem>
         <IonList>
-          {this.state.members.map((member: string, index: number) => (
+          {this.state.members.map((member, index) => (
             <IonItem key={member}>
               <IonLabel>{member}</IonLabel>
               <IonButton color="danger" onClick={() => this.subMember(index)}>Remove</IonButton>

@@ -6,7 +6,7 @@ import {
   IonLabel,
   IonButton
 } from '@ionic/react';
-import { authRequest } from '../hooks/requestManager';
+import { authRequest, sendRequest } from '../hooks/requestManager';
 import { get } from '../hooks/useGroupStorage';
 import { personCircle } from 'ionicons/icons';
 import { InAppBrowser } from '@ionic-native/in-app-browser';
@@ -36,6 +36,8 @@ import { UserContext } from "../App";
 
 /* Theme variables */
 import '../theme/variables.css';
+import { exception } from "node:console";
+import { parse } from "node:url";
 
 interface UserDetailPageProps extends RouteComponentProps<{
   id: string;
@@ -47,10 +49,26 @@ const Login: React.FC<UserDetailPageProps> = ({match}) => {
   /* This part allows the user to log in if they use a valid username
      and password. We want probably want to make the request to the
      auth service from here. */
+    
+     sendRequest("GET", "getUserBySpotifyID", { spotifyID: match.params.id }, "currentUser");
+
+     const cUserPromise = get("currentUser");
+     cUserPromise.then((val) =>{
+       console.log(val);
+      val = JSON.parse(val);
+      if(!val.success){
+        console.log("user doesnt exist");
+      }else{
+        document.cookie = JSON.stringify({ spotifyID: val.data });
+      }
+
+     });
+
 
   //const [userName, setUserName] = useState<string>("");
   //const [password, setPassword] = useState<string>("");
   const user = useContext(UserContext);
+
 
   const loginClick = () => {
     authRequest();
