@@ -9,6 +9,8 @@ import {
 import { authRequest } from '../hooks/requestManager';
 import { get } from '../hooks/useGroupStorage';
 import { personCircle } from 'ionicons/icons';
+import { InAppBrowser } from '@ionic-native/in-app-browser';
+import { RouteComponentProps } from 'react-router-dom';
 
 // CSS stuff to centralise the UI.
 import './Login.css';
@@ -35,7 +37,19 @@ import { UserContext } from "../App";
 /* Theme variables */
 import '../theme/variables.css';
 
-const Login: any = () => {
+interface UserDetailPageProps extends RouteComponentProps<{
+  id: string;
+}> {}
+
+const Login: React.FC<UserDetailPageProps> = ({match}) => {
+  console.log("login route");
+  console.log("id :: "+match.params.id); //will need to check this id, since everything comes through here (e.g. 'groups' page will be read as id=groups)
+  /* This part allows the user to log in if they use a valid username
+     and password. We want probably want to make the request to the
+     auth service from here. */
+
+  //const [userName, setUserName] = useState<string>("");
+  //const [password, setPassword] = useState<string>("");
   const user = useContext(UserContext);
 
   const loginClick = () => {

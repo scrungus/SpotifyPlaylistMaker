@@ -32,11 +32,13 @@ def userDataFormat(id=None, username=None, spotify_auth=None, spotify_id=None):
 
 class DatabaseConnector:
     def __init__(self):
-        self.connection = self.createConnection(
-            "86.8.33.127", "client", "spm2021", "user_data")
+        self.connection = self.createConnection()
 
-    def createConnection(self, hostName, userName, userPassword, database):
-
+    def createConnection(self):
+        hostName = "86.8.33.127"
+        userName = "client"
+        userPassword = "spm2021"
+        database = "user_data"
         connection = None
 
         try:
@@ -48,15 +50,16 @@ class DatabaseConnector:
                 user=userName,
 
                 password=userPassword,
-                database=database
+                database=database,
+                buffered=True
 
             )
 
             print("Connection to MySQL DB successful")
 
-        except Error as e:
+        except mysql.connector.Error as err:
 
-            print(f"The error '{e}' occurred")
+            print(f"The error '{err}' occurred")
 
         return connection
 
@@ -99,7 +102,7 @@ class DatabaseConnector:
             "data": userDataFormat(id=res[0][0], username=res[0][1], spotify_auth=res[0][2], spotify_id=res[0][3]),
             "error": ""}
 
-    def addUser(self, username: str, spotifyID: str, spotifyAuth=None):
+    def addUser(self, username: str, spotifyID: str, spotifyAuth=None, image=None):
         sql = "INSERT INTO users (username, spotify_auth, spotify_id) VALUES (%(username)s, %(spotify_auth)s, %(spotify_id)s)"
         val = {"username": username,
                "spotify_auth": spotifyAuth, "spotify_id": spotifyID}

@@ -4,8 +4,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
 from typing import Dict,Any
+import threading
+import traceback
 
 from . import server_interface
+import time
 
 db : server_interface.DatabaseConnector #defines the type of this variable
 db = server_interface.DatabaseConnector() #Inits connection with server
@@ -40,6 +43,20 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
+def keepConnectionAlive():
+    print("Connection alive thread")
+    while(True):
+        time.sleep(10)
+        try:
+            cursor = db.connection.cursor()
+            cursor.execute("SELECT 1")
+        except Exception: 
+            db.connection.reconnect()
+
+
+keepAliveThread = threading.Thread(target=keepConnectionAlive, daemon=True)
+keepAliveThread.start()
+
 @app.get("/getUserByID", tags=["getUserByID"])
 async def getUserByID(id : str):
     return db.getUser(id=id)
@@ -63,7 +80,7 @@ class addUserRequest(BaseModel):
 @app.post("/addUser",tags=["addUser"])
 async def addUser(req : Dict[Any,Any]):
     print("new user added!")
-    return db.addUser(req['display_name'], req['id'], req['access_token'])
+    return db.addUser(req['display_name'], req['id'], req['access_token'],req['images'][0]['url'])
 
 class addPlaylistRequest(BaseModel):
     link: str

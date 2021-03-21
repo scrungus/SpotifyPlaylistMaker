@@ -58,7 +58,12 @@ class Playlists extends React.Component<{}, PlaylistsState> {
     super(props)
   }
   componentWillMount(){
-    this.setState({playlists: [], userID: 18});
+    let userID = window.localStorage.getItem('UserID') || "-1";
+    if(userID == "-1"){
+      console.error("No user ID");
+    }
+
+    this.setState({playlists: [], userID: parseInt(userID)});
   }
   componentDidMount() {
     getPlaylists(this.state.userID).then((data: any) => {
@@ -70,13 +75,11 @@ class Playlists extends React.Component<{}, PlaylistsState> {
 
 
   render() {
-    let userID = 18;
 
 
     //let playlists = [{name: "p1", link: "http://www.google.com", icon: null}, {name: "p2", link: "http://www.spotify.com", icon: null}];
 
 
-    //let playlists = getPlaylists(userID);
 
     return (
       <IonPage>

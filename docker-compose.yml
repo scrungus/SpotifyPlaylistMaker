@@ -50,3 +50,17 @@ services:
           memory: 100M
     ports:
       - 8002:8002  # host:container
+  imgpush:
+    ports:
+        - "5000:5000"
+    build: ./imgpush
+    volumes:
+      - ./imgpush/app:/usr/src/app
+      - ./imgpush/images:/usr/src/app/images
+      - ./imgpush/cache:/usr/src/app/cache
+    deploy:
+      resources:
+        limits:
+          memory: 500M
+        reservations:
+          memory: 100M
