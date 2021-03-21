@@ -58,3 +58,9 @@ services:
       - ./imgpush/app:/usr/src/app
       - ./imgpush/images:/usr/src/app/images
       - ./imgpush/cache:/usr/src/app/cache
+    deploy:
+      resources:
+        limits:
+          memory: 500M
+        reservations:
+          memory: 100M

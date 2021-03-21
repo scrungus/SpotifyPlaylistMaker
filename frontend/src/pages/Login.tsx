@@ -43,7 +43,7 @@ interface UserDetailPageProps extends RouteComponentProps<{
 
 const Login: React.FC<UserDetailPageProps> = ({match}) => {
   console.log("login route");
-  console.log("id :: "+match.params.id);
+  console.log("id :: "+match.params.id); //will need to check this id, since everything comes through here (e.g. 'groups' page will be read as id=groups)
   /* This part allows the user to log in if they use a valid username
      and password. We want probably want to make the request to the
      auth service from here. */
