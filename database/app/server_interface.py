@@ -32,11 +32,13 @@ def userDataFormat(id=None, username=None, spotify_auth=None, spotify_id=None):
 
 class DatabaseConnector:
     def __init__(self):
-        self.connection = self.createConnection(
-            "86.8.33.127", "client", "spm2021", "user_data")
+        self.connection = self.createConnection()
 
-    def createConnection(self, hostName, userName, userPassword, database):
-
+    def createConnection(self):
+        hostName = "86.8.33.127"
+        userName = "client"
+        userPassword = "spm2021"
+        database = "user_data"
         connection = None
 
         try:
@@ -48,7 +50,8 @@ class DatabaseConnector:
                 user=userName,
 
                 password=userPassword,
-                database=database
+                database=database,
+                buffered=True
 
             )
 
