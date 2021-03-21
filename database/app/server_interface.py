@@ -153,7 +153,7 @@ class DatabaseConnector:
         cursor.execute(sql, val)
         return {"success": True, "data": cursor.fetchall(), "error": ""}
 
-    def checkGroupName(self, name: str, creatorID: int):
+    def checkGroupName(self, name: str, creatorID: str):
         sql = "SELECT * FROM user_groups WHERE group_name=%(name)s AND creator=%(creatorID)s"
         val = {"name": name, "creatorID": creatorID}
 
@@ -165,8 +165,8 @@ class DatabaseConnector:
             return False
         return True
 
-    def addGroup(self, name: str, creatorID: int):
-        if(self.getUser(id=creatorID)["success"] == False):
+    def addGroup(self, name: str, creatorID: str):
+        if(self.getUser(spotifyID=creatorID)["success"] == False):
             return {"success": False, "data": None, "error": "The creator doesnt exist"}
 
         if(self.checkGroupName(name, creatorID) == False):
@@ -179,13 +179,21 @@ class DatabaseConnector:
         cursor = self.connection.cursor()
         cursor.execute(sql, val)
         self.connection.commit()
-        return {"success": True, "data": None, "error": ""}
 
-    def addGroupMember(self, userID: int, groupCode: str):
+        cursor = self.connection.cursor()
+        cursor.execute("SELECT group_id FROM user_groups WHERE creator=%(creatorID)s", {"creatorID": creatorID})
+        res = cursor.fetchall()
+        
+
+        return {"success": True, "data": hashForward(res[0][0]), "error": ""}
+
+    def addGroupMember(self, spotifyID: str, groupCode: str):
         groupID = hashBack(groupCode)
-
-        if(self.getUser(id=userID)["success"] == False):
+        userData = self.getUser(spotifyID=spotifyID)
+        if(userData["success"] == False):
             return {"success": False, "data": None, "error": "User doesnt exist"}
+            
+        userID = userData["data"]["id"]
 
         sql = "INSERT INTO group_members (group_id, user_id) VALUES (%(group_id)s, %(user_id)s)"
         val = {"group_id": groupID, "user_id": userID}

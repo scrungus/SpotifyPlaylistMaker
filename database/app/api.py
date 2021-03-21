@@ -105,7 +105,7 @@ async def getGroupPlaylists(id : int):
     return db.getPlaylists(groupID=id)
 
 class AddGroupRequest(BaseModel):
-    creatorID: int
+    creatorID: str
     name: str
 
 @app.post("/addGroup", tags=["addGroup"])
@@ -114,11 +114,11 @@ async def addGroup(req: AddGroupRequest):
 
 class AddGroupMemberRequest(BaseModel):
     groupCode: str
-    userID: int
+    spotifyID: str
 
 @app.post("/addGroupMember", tags=["addGroupMember"])
 async def addGroupMember(req: AddGroupMemberRequest):
-    return db.addGroupMember(req.userID, req.groupCode)
+    return db.addGroupMember(req.spotifyID, req.groupCode)
 
 @app.get("/getGroupMembers", tags=["getGroupMembers"])
 async def getGroupMembers(groupCode: str):

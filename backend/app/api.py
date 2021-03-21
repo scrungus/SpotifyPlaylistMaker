@@ -65,7 +65,7 @@ async def generatePlaylist(id : List[str] = Query(None)):
     playlistNames = []
 
     for idx in id:
-        user = await client.get('http://spotifyplaylistmaker_database_1:8002/getUserByID'+'?id='+idx)
+        user = await client.get('http://spotifyplaylistmaker_database_1:8002/getUserBySpotifyID'+'?id='+idx)
         usernames.append(user.username)
         tokens.append(user.spotify_auth)
 
