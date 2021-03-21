@@ -55,8 +55,6 @@ app.add_middleware(
 
 print("STATE : ",state)
 
-#playlist code:
-
 #creates a playlist and fills it with some songs
 @app.get("/generatePlaylist", tags=['generatePlaylist'])
 async def generatePlaylist(id : List[str] = Query(None)):
@@ -64,21 +62,39 @@ async def generatePlaylist(id : List[str] = Query(None)):
     usernames = []
     tokens = []
     sp = []
+    playlistNames = []
 
     for idx in id:
         user = await client.get('http://spotifyplaylistmaker_database_1:8002/getUserByID'+'?id='+idx)
         usernames.append(user.username)
         tokens.append(user.spotify_auth)
 
-   
-
     reducedArtists = []
     track_list = []
 
+    spot = spotipy.Spotify(tokens[0], auth_manager=SpotifyOAuth(client_id=clientID, client_secret=clientSecret, scope=scopes))
+
+    # generate playlist names and description
+    playlistDescription = 'This is an automated playlist generated for the following group:'
+    for grp_member in range(len(tokens)):
+        playlistDescription += ' ' + usernames[grp_member]
+        sp.append(spotipy.Spotify(tokens[grp_member], auth_manager=SpotifyOAuth(client_id=clientID, client_secret=clientSecret, scope=scopes)))
+        playlists = sp[grp_member].user_playlists(usernames[grp_member])
+        latestPlaylist = 0
+        for item in playlists['items']:
+            if item['name'][0:14] == 'Group Playlist' and len(item['name']) == 14 and latestPlaylist < 2:
+                latestPlaylist = 1
+            if item['name'][0:14] == 'Group Playlist' and len(item['name']) > 14 and int(item['name'][15:len(item['name'])]) > latestPlaylist:
+                latestPlaylist = int(item['name'][15:len(item['name'])])
+
+        if latestPlaylist == 0:
+            playlistNames.append('Group Playlist')
+        else:
+            playlistNames.append('Group Playlist ' + str(latestPlaylist + 1))
+
     # get 5 most common artists from each user
     for grp_member in range(len(tokens)):
-        sp.append(spotipy.Spotify(tokens[grp_member], auth_manager=SpotifyOAuth(client_id=clientID, client_secret=clientSecret, redirect_uri=redirectURI, scope=scopes)))
-        sp[grp_member].user_playlist_create(usernames[grp_member], 'test13', public=False, collaborative=False, description='description')
+        createdPlaylist = sp[grp_member].user_playlist_create(usernames[grp_member], playlistNames[grp_member], public=True, collaborative=False, description=playlistDescription)
         allArtists = []
         playlists = sp[grp_member].user_playlists(usernames[grp_member])
         for playlist in playlists['items']:
@@ -93,66 +109,24 @@ async def generatePlaylist(id : List[str] = Query(None)):
         reducedArtists[i] = reducedArtists[i][0]
 
     # get recommendation for group
-    spot = spotipy.Spotify(tokens[0], auth_manager=SpotifyOAuth(client_id=clientID, client_secret=clientSecret, redirect_uri=redirectURI, scope=scopes))
     tracks = spot.recommendations(seed_artists=reducedArtists, limit=20)
     for track in tracks['tracks']:
        track_list.append(track['uri'])
 
     # add recommendation for all users
+    spot.playlist_add_items(createdPlaylist['uri'], track_list)
     for grp_member in range(len(tokens)):
-        sp.append(spotipy.Spotify(tokens[grp_member], auth_manager=SpotifyOAuth(client_id=clientID, client_secret=clientSecret, redirect_uri=redirectURI, scope=scopes)))
-        playlists = spot.user_playlists(usernames[grp_member])
-        for item in playlists['items']:
-            if item['name'] == 'test13':
-                id = item['uri']
-        sp[grp_member].playlist_add_items(id, track_list)
+        if grp_member != 1:
+            sp[grp_member].user_playlist_follow_playlist(usernames[grp_member], playlist_id=createdPlaylist['id'])
+    a = spotipy.Spotify(tokens[0], auth_manager=SpotifyOAuth(client_id=clientID, client_secret=clientSecret, scope=scopes))
+    print(a.playlist(playlist_id=createdPlaylist['id'])['id'])
 
-    return "playlist created successfully"
+    # return playlist id
+    return createdPlaylist['id']
 
-#adds some songs to an existing playlist
-@app.get("/editplaylist", tags=['editplaylist'])
-async def addtoplaylist(id : str, pid : str):
-    sp = spotipy.Spotify(auth=sp_oauth.get_access_token()['access_token'], auth_manager=SpotifyClientCredentials())
-    playlists = sp.user_playlists(username)
-    for item in playlists['items']:
-        if item['name'] == 'test':
-            id = item['uri']
-    tracks = ['spotify:track:2BjBfSbmAqqg4FumwVQYCV', 'spotify:track:0UAJH0k4k3slcE83a9UGCe']
-    sp.playlist_add_items(id, tracks)
-
-    return "playlist edited successfully"
-    
-
-    # get 5 most common artists from each user
-    for grp_member in range(len(tokens)):
-        sp.append(spotipy.Spotify(tokens[grp_member], auth_manager=SpotifyOAuth(client_id=clientID, client_secret=clientSecret, redirect_uri=redirectURI, scope=scopes)))
-        sp[grp_member].user_playlist_create(usernames[grp_member], 'test13', public=False, collaborative=False, description='description')
-        allArtists = []
-        playlists = sp[grp_member].user_playlists(usernames[grp_member])
-        for playlist in playlists['items']:
-            if playlist['owner']['id'] == usernames[grp_member]:
-                results = sp[grp_member].user_playlist(usernames[grp_member], playlist['id'], fields="tracks")
-                tracks = results['tracks']
-                for item in tracks['items']:
-                    track = item['track']
-                    allArtists.append(track['artists'][0]['uri'])
-        reducedArtists += Counter(allArtists).most_common(5)
-    for i, artist in enumerate(reducedArtists):
-        reducedArtists[i] = reducedArtists[i][0]
-
-    # get recommendation for group
-    spot = spotipy.Spotify(tokens[0], auth_manager=SpotifyOAuth(client_id=clientID, client_secret=clientSecret, redirect_uri=redirectURI, scope=scopes))
-    tracks = spot.recommendations(seed_artists=reducedArtists, limit=20)
-    for track in tracks['tracks']:
-       track_list.append(track['uri'])
-
-    # add recommendation for all users
-    for grp_member in range(len(tokens)):
-        sp.append(spotipy.Spotify(tokens[grp_member], auth_manager=SpotifyOAuth(client_id=clientID, client_secret=clientSecret, redirect_uri=redirectURI, scope=scopes)))
-        playlists = spot.user_playlists(usernames[grp_member])
-        for item in playlists['items']:
-            if item['name'] == 'test13':
-                id = item['uri']
-        sp[grp_member].playlist_add_items(id, track_list)
-
-    return "playlist created successfully"
+# takes in access token and playlist id
+# returns playlist as json
+@app.get("/getplaylistinfo", tags=['getplaylistinfo'])
+async def getplaylistinfo(id : str, tkn : str):
+    sp = spotipy.Spotify(tkn, auth_manager=SpotifyOAuth(client_id=clientID, client_secret=clientSecret, scope=scopes))
+    return sp.playlist(playlist_id=id)
