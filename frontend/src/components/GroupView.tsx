@@ -7,7 +7,8 @@ import {
   IonContent, 
   IonTitle, 
   IonItem,
-  IonImg} from '@ionic/react';
+  IonImg,
+  IonInput} from '@ionic/react';
 import { people } from 'ionicons/icons';
 import { get } from '../hooks/useGroupStorage';
 import { sendRequest } from '../hooks/requestManager';
@@ -32,6 +33,31 @@ async function getGroupMembers(groupCode: number | string): Promise<Member[]> {
   return JSON.parse(members)['data']['users'];
 }
 
+function loadImageFromDevice(event) {
+
+  const file = event.target.files[0];
+
+  const reader = new FileReader();
+
+  reader.readAsArrayBuffer(file);
+
+  reader.onload = () => {
+
+    // get the blob of the image:
+    let blob: Blob = new Blob([new Uint8Array((reader.result as ArrayBuffer))]);
+
+    // create blobURL, such that we could use it in an image element:
+    let blobURL: string = URL.createObjectURL(blob);
+
+  };
+
+  reader.onerror = (error) => {
+
+    //handle errors
+
+  };
+};
+
 // Component displayed in modal after group is tapped in Groups tab
 const GroupView: React.FC<ContainerProps> = props => {
   const [members, setMembers] = useState<Member[]>([]);
@@ -46,7 +72,11 @@ const GroupView: React.FC<ContainerProps> = props => {
   return (
     <IonContent color="light">
       <IonItem>
-        <IonImg src={people}></IonImg>
+      <IonInput type="file" onIonChange={() => loadImageFromDevice}
+          accept="image/png, image/jpeg">
+        </IonInput>
+        <IonImg src={people}>
+        </IonImg>
       </IonItem>
       <IonTitle>Members</IonTitle>
       {members.map((member, index: number) => (
