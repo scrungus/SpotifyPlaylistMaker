@@ -7,11 +7,4 @@
 uvicorn.exe
 .idea/workspace.xml
 
-<<<<<<< HEAD
 **/.cache
-=======
-.cache
-.cache
-auth/.cache
-.cache
->>>>>>> c82b6017b0c3d4909c8a2e81eac0919dfb45fb8e
