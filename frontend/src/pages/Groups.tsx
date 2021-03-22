@@ -20,6 +20,7 @@ import { get } from '../hooks/useGroupStorage';
 import { sendRequest } from '../hooks/requestManager';
 import './Groups.scss';
 import GroupView from '../components/GroupView';
+import { groupCollapsed } from 'node:console';
 
 interface Group {
   group_code: string;
@@ -32,8 +33,13 @@ async function getUsersGroups(userId: number | string): Promise<Group[]> {
   }
 
   sendRequest("GET", "getUsersGroupsBySpotifyID", params, "groups");
-  const groups = await get("groups");
-  return JSON.parse(groups)['data'];
+  const groups = get("groups");
+  groups.then((val) => {
+    if(val['success']){
+      return JSON.parse(val)['data'];
+    }
+  })
+  return [];
 }
 
 const Groups: React.FC = () => {
@@ -47,7 +53,7 @@ const Groups: React.FC = () => {
   }
 
   useEffect(() => {
-    const currUserID = JSON.parse(document.cookie).spotifyID.spotify_id;
+    const currUserID = JSON.parse(document.cookie).spotify_id;
     const groups_promise = getUsersGroups(currUserID);
     groups_promise.then((values) => {
       if (values !== null) { 
