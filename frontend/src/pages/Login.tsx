@@ -50,17 +50,23 @@ const Login: React.FC<UserDetailPageProps> = ({match}) => {
      and password. We want probably want to make the request to the
      auth service from here. */
 
-  sendRequest("GET", "getUserBySpotifyID", { spotifyID: match.params.id }, "currentUser");
+  if (match.params.id !== undefined){
+    sendRequest("GET", "getUserBySpotifyID", { spotifyID: match.params.id }, "currentUser");
   
-  const cUserPromise = get("currentUser");
-  cUserPromise.then((val) =>{
-  val = JSON.parse(val);
-  if(!val.success){
-    console.log("user doesnt exist");
-  }else{
-    document.cookie = JSON.stringify({ spotifyID: val.data });
+    const cUserPromise = get("currentUser");
+    cUserPromise.then((val) =>{
+    if(!val){
+      return
+    }
+    val = JSON.parse(val);
+    if(!val.success){
+      console.log("user doesnt exist");
+    }else{
+      document.cookie = JSON.stringify({ spotifyID: val.data });
+    }
+    });
   }
-  });
+  
 
 
   //const [userName, setUserName] = useState<string>("");
