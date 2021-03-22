@@ -51,7 +51,8 @@ class DatabaseConnector:
 
                 password=userPassword,
                 database=database,
-                buffered=True
+                buffered=True,
+                auth_plugin='mysql_native_password'
 
             )
 
