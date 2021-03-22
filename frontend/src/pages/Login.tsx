@@ -55,15 +55,17 @@ const Login: React.FC<UserDetailPageProps> = ({match}) => {
   
     const cUserPromise = get("currentUser");
     cUserPromise.then((val) =>{
-    if(!val){
-      return
+    try{
+      val = JSON.parse(val);
+      if(!val.success){
+        console.log("user doesnt exist");
+      }else{
+        document.cookie = JSON.stringify({ spotifyID: val.data });
+      }
     }
-    val = JSON.parse(val);
-    if(!val.success){
-      console.log("user doesnt exist");
-    }else{
-      document.cookie = JSON.stringify({ spotifyID: val.data });
-    }
+    catch{
+      console.log("invalid user data");
+    } 
     });
   }
   
