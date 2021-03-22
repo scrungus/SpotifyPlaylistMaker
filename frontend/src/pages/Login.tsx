@@ -44,7 +44,6 @@ interface UserDetailPageProps extends RouteComponentProps<{
 }> {}
 
 const Login: React.FC<UserDetailPageProps> = ({match}) => {
-  console.log("login route");
   console.log("id :: "+match.params.id); //will need to check this id, since everything comes through here (e.g. 'groups' page will be read as id=groups)
   /* This part allows the user to log in if they use a valid username
      and password. We want probably want to make the request to the
@@ -56,6 +55,7 @@ const Login: React.FC<UserDetailPageProps> = ({match}) => {
     const cUserPromise = get("currentUser");
     cUserPromise.then((val) =>{
     try{
+      console.log("val: ",val);
       val = JSON.parse(val);
       if(!val.success){
         console.log("user doesnt exist");
@@ -70,14 +70,14 @@ const Login: React.FC<UserDetailPageProps> = ({match}) => {
     });
   }
 
-  /* if(document.cookie){
+  if(document.cookie){
     const cUserPromise = get("currentUser");
     cUserPromise.then((val) =>{
-      if(val && val['spotifyID'] === document.cookie['spotifyID']){
+      if(val && val['spotifyID'] === JSON.parse(document.cookie).spotify_id){
         user.setIsLoggedIn(true);
       }
     }); 
-  }*/
+  }
   
 
 
@@ -94,8 +94,8 @@ const Login: React.FC<UserDetailPageProps> = ({match}) => {
       // Best I could do, only works after authentication
       redirectWindow.addEventListener('pageshow', (e) => {
         if (e) {
-          redirectWindow.close();
-          user.setIsLoggedIn(true);
+          //redirectWindow.close();
+          //user.setIsLoggedIn(true);
         }
       });
     });
