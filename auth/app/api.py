@@ -80,7 +80,10 @@ async def callback(request : Request):
         results = sp.current_user()
         results.update({'access_token': access_token})
 
-        httpx.post('http://spotifyplaylistmaker_database_1:8002/addUser',json=results)   
+        # httpx.post('http://spotifyplaylistmaker_database_1:8002/addUser',json=results)   
+        with httpx.Client() as client:
+            r = client.post('http://spotifyplaylistmaker_database_1:8002/addUser', json=results)
+            
         print("Success!")
 
     else:

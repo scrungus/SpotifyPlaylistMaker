@@ -47,9 +47,12 @@ const Groups: React.FC = () => {
   }
 
   useEffect(() => {
-    const groups_promise = getUsersGroups(1);
+    const currUserID = JSON.parse(document.cookie).spotifyID.spotify_id;
+    const groups_promise = getUsersGroups(currUserID);
     groups_promise.then((values) => {
-      setGroups(values);
+      if (values !== null) { 
+        setGroups(values);
+      }
     });
   }, []);
 

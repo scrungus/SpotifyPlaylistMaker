@@ -86,23 +86,27 @@ async def addUser(req : Dict[Any,Any]):
 
 class addPlaylistRequest(BaseModel):
     link: str
-    id: int
+    id: str
 
 @app.post("/addUserPlaylist", tags=["addUserPlaylist"])
 async def addUserPlaylist(req : addPlaylistRequest):
-    return db.addPlaylist(req.link, userID=req.id)
+    return db.addPlaylist(req.link, spotifyID=req.id)
+
+class addPlaylistRequest(BaseModel):
+    link: str
+    code: str
 
 @app.post("/addGroupPlaylist", tags=["addGroupPlaylist"])
 async def addGroupPlaylist(req : addPlaylistRequest):
-    return db.addPlaylist(req.link, groupID=req.id)
+    return db.addPlaylist(req.link, groupID=req.code)
 
 @app.get("/getUserPlaylists", tags=["getUserPlaylists"])
-async def getUserPlaylists(id : int):
-    return db.getPlaylists(userID=id)
+async def getUserPlaylists(id : str):
+    return db.getPlaylists(spotifyID=id)
 
 @app.get("/getGroupPlaylists", tags=["getGroupPlaylists"])
-async def getGroupPlaylists(id : int):
-    return db.getPlaylists(groupID=id)
+async def getGroupPlaylists(groupID : str):
+    return db.getPlaylists(groupID=groupID)
 
 class AddGroupRequest(BaseModel):
     creatorID: str
@@ -136,10 +140,4 @@ async def getUsersGroupsByUsername(username: str):
 async def getUsersGroupsBySpotifyID(spotifyID: str):
     return db.getUsersGroups(spotify_id=spotifyID)
     
-
     
-
-
-
-
-
