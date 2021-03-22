@@ -1,18 +1,19 @@
 import { useState, useEffect } from 'react';
-import { 
+import {
   IonHeader,
   IonToolbar,
-  IonContent, 
-  IonIcon, 
-  IonPage, 
+  IonContent,
+  IonIcon,
+  IonPage,
   IonFab,
-  IonTitle, 
+  IonTitle,
   IonList,
   IonItem,
   IonFabButton,
   IonModal,
   IonButton,
-  IonButtons
+  IonButtons,
+  IonInput
 } from '@ionic/react';
 import { add, close } from 'ionicons/icons';
 import GroupContainer from '../components/GroupContainer';
@@ -40,17 +41,24 @@ const Groups: React.FC = () => {
   const [groups, setGroups] = useState<Group[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState({group_code: "", group_name: ""});
+  const [code, setCode] = useState<string>("");
 
   const getModal = (group: Group) => {
     setSelectedGroup(group);
     setShowModal(true);
   }
 
+  const joinGroup = (groupCode: string) => {
+    const userID = JSON.parse(document.cookie).spotifyID.spotify_id;
+    const params = { groupCode: groupCode, userID: userID };
+    sendRequest("POST", "addGroupMember", params, "addmember");
+  }
+
   useEffect(() => {
     const currUserID = JSON.parse(document.cookie).spotifyID.spotify_id;
     const groups_promise = getUsersGroups(currUserID);
     groups_promise.then((values) => {
-      if (values !== null) { 
+      if (values !== null) {
         setGroups(values);
       }
     });
@@ -86,6 +94,11 @@ const Groups: React.FC = () => {
               <GroupContainer groupName={group.group_name}/>
             </IonItem>
           ))}
+          <IonItem>
+            <IonInput value={code} placeholder="Group code"
+              onIonChange={e => setCode(e.detail.value!)}></IonInput>
+            <IonButton onClick={() => joinGroup(code)}>Join group with code</IonButton>
+          </IonItem>
         </IonList>
       </IonContent>
     </IonPage>

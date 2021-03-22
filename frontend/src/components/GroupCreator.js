@@ -77,8 +77,8 @@ class GroupCreator extends Component {
             As the creator, you will be added to it automatically.
           </IonItem>
           <IonItem>
-            To add other people, give them the code listed on the Groups page.
-            They must enter the code via (HOWEVER WE DO IT).
+            To add other people, give them the code listed for {this.state.name} on your Groups page.
+            They must enter the code on their Groups page.
           </IonItem>
         </>)}
       </IonCard>
