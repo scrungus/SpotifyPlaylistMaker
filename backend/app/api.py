@@ -11,6 +11,7 @@ import os
 import httpx
 from typing import List
 from collections import Counter
+import json 
 
 STATE_LENGTH=16
 
@@ -65,9 +66,12 @@ async def generatePlaylist(id : List[str] = Query(None)):
     playlistNames = []
 
     for idx in id:
-        user = await client.get('http://spotifyplaylistmaker_database_1:8002/getUserBySpotifyID'+'?id='+idx)
-        usernames.append(user.username)
-        tokens.append(user.spotify_auth)
+        with httpx.Client() as client:
+            user = client.get('http://spotifyplaylistmaker_database_1:8002/getUserBySpotifyID'+'?spotifyID='+idx).text
+        user = json.loads(user)
+        print(user)
+        usernames.append(user['data']['username'])
+        tokens.append(user['data']['spotify_auth'])
 
     reducedArtists = []
     track_list = []
