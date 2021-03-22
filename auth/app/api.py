@@ -81,14 +81,16 @@ async def callback(request : Request):
         results.update({'access_token': access_token})
 
         # httpx.post('http://spotifyplaylistmaker_database_1:8002/addUser',json=results)   
-        with httpx.Client() as client:
+        async with httpx.AsyncClient() as client:
             r = client.post('http://spotifyplaylistmaker_database_1:8002/addUser', json=results, timeout=False)
-            
+
+        return RedirectResponse("http://localhost:3000/"+results['id'])    
         print("Success!")
 
     else:
         print("None or Invalid Access Token.")
-    return RedirectResponse("http://localhost:3000/"+results['id'])
+    return None
+    
 
 
 def parse(url):
