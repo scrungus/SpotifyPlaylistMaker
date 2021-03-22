@@ -57,7 +57,7 @@ const IonicApp: React.FC = () => {
         <IonRouterOutlet>
           <Route exact path="/login" component={Login}/>
           <Route exact path="/callback/:id" component={Callback}/>
-          <Route exact path="/main_tabs" component={MainTabs}/>
+          <Route path="/main_tabs" component={MainTabs}/>
           <Route exact path="/create_group" component={CreateGroup}/>
           <Redirect exact from="/" to="/login"/>
         </IonRouterOutlet>
