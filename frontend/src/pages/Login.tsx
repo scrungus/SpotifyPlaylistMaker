@@ -60,14 +60,24 @@ const Login: React.FC<UserDetailPageProps> = ({match}) => {
       if(!val.success){
         console.log("user doesnt exist");
       }else{
-        document.cookie = JSON.stringify({ spotifyID: val.data });
+        document.cookie = JSON.stringify(val.data);
       }
     }
-    catch{
+    catch(e){
+      console.error(e);
       console.log("invalid user data");
     } 
     });
   }
+
+  /* if(document.cookie){
+    const cUserPromise = get("currentUser");
+    cUserPromise.then((val) =>{
+      if(val && val['spotifyID'] === document.cookie['spotifyID']){
+        user.setIsLoggedIn(true);
+      }
+    }); 
+  }*/
   
 
 
