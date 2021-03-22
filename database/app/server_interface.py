@@ -111,8 +111,8 @@ class DatabaseConnector:
                 "spotify_auth": spotifyAuth,
                 "spotify_id": spotifyID
                 })
-
-            return
+            self.connection.commit()
+            return {"success": True, "error": ""}
 
         sql = "INSERT INTO users (username, spotify_auth, spotify_id) VALUES (%(username)s, %(spotify_auth)s, %(spotify_id)s)"
         val = {"username": username,

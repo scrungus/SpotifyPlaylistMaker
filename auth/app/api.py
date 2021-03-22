@@ -83,9 +83,9 @@ async def callback(request : Request):
         # httpx.post('http://spotifyplaylistmaker_database_1:8002/addUser',json=results)   
         async with httpx.AsyncClient() as client:
             r = client.build_request('POST','http://spotifyplaylistmaker_database_1:8002/addUser', json=results)
-            await client.send(r,timeout=None)
+            await client.send(r,timeout=5)
 
-        return RedirectResponse("http://localhost:3000/"+results['id'])    
+        return RedirectResponse("http://localhost:3000/callback/"+results['id'])    
         print("Success!")
 
     else:

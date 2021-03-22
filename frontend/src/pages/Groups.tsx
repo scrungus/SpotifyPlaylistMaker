@@ -20,7 +20,6 @@ import { get } from '../hooks/useGroupStorage';
 import { sendRequest } from '../hooks/requestManager';
 import './Groups.scss';
 import GroupView from '../components/GroupView';
-import { groupCollapsed } from 'node:console';
 
 interface Group {
   group_code: string;
@@ -35,7 +34,7 @@ async function getUsersGroups(userId: number | string): Promise<Group[]> {
   sendRequest("GET", "getUsersGroupsBySpotifyID", params, "groups");
   const groups = get("groups");
   groups.then((val) => {
-    if(val['success']){
+    if(val !== null && val['success']){
       return JSON.parse(val)['data'];
     }
   })
