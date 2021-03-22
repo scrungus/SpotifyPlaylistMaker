@@ -106,10 +106,12 @@ class DatabaseConnector:
         user = self.getUser(spotifyID=spotifyID)
         if(user["success"] == True):
             cursor = self.connection.cursor()
-            cursor.execute("UPDATE user_data SET spotify_auth=%(spotify_auth)s WHERE spotify_id=%(spotify_id)s", {
+            cursor.execute("UPDATE users SET spotify_auth=%(spotify_auth)s WHERE spotify_id=%(spotify_id)s", {
                 "spotify_auth": spotifyAuth,
                 "spotify_id": spotifyID
                 })
+
+            return
 
         sql = "INSERT INTO users (username, spotify_auth, spotify_id) VALUES (%(username)s, %(spotify_auth)s, %(spotify_id)s)"
         val = {"username": username,
