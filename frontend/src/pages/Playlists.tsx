@@ -63,18 +63,13 @@ const Playlists: React.FC = () => {
   //   setShowModal(true);
   // }
 
-  const currUserID = JSON.parse(document.cookie).spotify_id;
+  const currUserID = JSON.parse(document.cookie.split('; ')[0].slice(5)).spotify_id
   console.log(currUserID);
-  sendRequest("GET", "getUserPlaylists", { id: currUserID }, "playlists");
+  console.log(sendRequest("GET", "getUserPlaylists", { id: currUserID }, "playlists"));
 
   useEffect(() => {
-    const playlists_promise = getUsersPlaylists(currUserID);
-    playlists_promise.then((values) => {
-      if (values !== null) { 
-        setPlaylists(values);
-      }
-    });
-  }, [currUserID]);
+    console.log(playlists);
+  }, [playlists]);
 
 
 
