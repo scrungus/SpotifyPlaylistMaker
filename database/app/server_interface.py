@@ -130,28 +130,47 @@ class DatabaseConnector:
             "data": userDataFormat(id=res[i][0], username=res[i][1], spotify_auth=res[i][2], spotify_id=res[i][3]),
             "error": ""} for i in range(len(res)))
 
-    def addPlaylist(self, link: str, userID=None, groupID=None):
-        if(userID == None and groupID == None):
+    def addPlaylist(self, link: str, spotifyID=None, groupID=None):
+        if(spotifyID == None and groupID == None):
             return {"success": False, "error": "userID and groupID cannot both be blank"}
 
-        sql = "INSERT INTO playlists (link, user_id, group_id) VALUES (%(link)s, %(user_id)s, %(group_id)s)"
-        val = {"link": link, "user_id": userID, "group_id": groupID}
+        userID = None
+        if(spotifyID != None):
+            user = self.getUser(spotifyID=spotifyID)
+            if(user["success"] == False):
+                return user
+        else:
+            groupID = hashBack(groupID)
+            cursor = self.connection.cursor()
+            cursor.execute("SELECT * FROM user_groups WHERE group_id=%(group_id)s", { "group_id": groupID })
+            res = cursor.fetchall()
+
+            if(len(res) == 0):
+                return {"success": False, "error": "code doesnt exist"}
+
+        sql = "INSERT INTO playlists (link, spotify_id, group_id) VALUES (%(link)s, %(spotify_id)s, %(group_id)s)"
+        val = {"link": link, "spotify_id": spotifyID, "group_id": groupID }
 
         self.connection.cursor().execute(sql, val)
         self.connection.commit()
         return {"success": True, "error": ""}
 
-    def getPlaylists(self, userID=None, groupID=None):
-        if(userID != None):
-            sql = "SELECT playlist_id, link, user_id FROM playlists WHERE user_id = %(user_id)s"
-            val = {"user_id": userID}
+    def getPlaylists(self, spotifyID=None, groupID=None):
+        if(spotifyID != None):
+            sql = "SELECT * FROM playlists WHERE spotify_id = %(spotifyID)s"
+            val = {"spotifyID": spotifyID}
         else:
-            sql = "SELECT playlist_id, link, group_id WHERE group_id = %(group_id)s"
-            val = {"group_id": groupID}
+            sql = "SELECT * FROM playlists WHERE group_id = %(group_id)s"
+            val = {"group_id": hashBack(groupID)}
 
         cursor = self.connection.cursor()
         cursor.execute(sql, val)
-        return {"success": True, "data": cursor.fetchall(), "error": ""}
+        res = cursor.fetchall()
+
+        for i in range(len(res)):
+            res[i] = zip(["playlist_id", "link", "spotifyID", "groupID"], res[i])
+
+        return {"success": True, "data": res, "error": ""}
 
     def checkGroupName(self, name: str, creatorID: str):
         sql = "SELECT * FROM user_groups WHERE group_name=%(name)s AND creator=%(creatorID)s"
