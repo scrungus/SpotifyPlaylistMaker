@@ -8,8 +8,6 @@ import {
   IonImg,
   IonInput,
   IonItem,
-  IonLabel,
-  IonList,
   IonThumbnail,
   IonTitle,
 } from '@ionic/react';
@@ -19,8 +17,7 @@ import { sendRequest } from '../hooks/requestManager';
 class GroupCreator extends Component {
 
   state = {
-    group: "New Group",
-    members: [],
+    name: "",
   }
 
   nameGroup = () => {
@@ -30,57 +27,27 @@ class GroupCreator extends Component {
       return;
     }
     this.setState({
-      group: name,
+      name: name,
     });
     document.getElementById("namegroup").value = "";
   }
 
-  addMember = () => {
-    const name = document.getElementById("addmem").value;
-    if (name === "") {
-      alert("Enter a name.");
-      return;
-    }
-    this.setState({
-      members: [...this.state.members, name],
-    });
-    document.getElementById("addmem").value = "";
-  }
-
-  subMember = (num) => {
-    this.setState({
-      members: this.state.members.filter(function(value, index, arr){
-        return index != num;})
-    });
-  }
-
-  // TODO: Replace these with the proper requests and remove the alerts.
   saveGroup = () => {
-    const gName = this.state.group;
-    const mems = this.state.members;
-    if (mems.length==0) {
-      alert(gName+" has no members, so it can't be created. Going back to Groups page.");
+    const name = this.state.name;
+    if (name=="") {
+      alert("Cannot create an unnamed group.");
       return;
     }
-
-    alert("Create \""+gName+"\".");
-    const bodyGroup = { name: gName, creatorID: mems[0] };
-    sendRequest("POST", "addGroup", bodyGroup, "group");
-
-    mems.forEach(function (mem) {
-      alert("Add \""+mem+"\" to "+gName+".");
-      const bodyMem = { groupCode: gName, userID: mem };
-      sendRequest("POST", "addGroupMember", bodyMem, "group");
-    });
-
-    alert("Going back to Groups page.");
+    const creatorID = JSON.parse(document.cookie).spotifyID.spotify_id;
+    const params = { name: name, creatorID: creatorID };
+    sendRequest("POST", "addGroup", params, "addgroup");
   }
 
   render() {
     return (<>
       <IonFab vertical="top" horizontal="end" slot="fixed" edge>
         <IonFabButton onClick={() => this.saveGroup()} href="./groups">
-          <IonIcon icon={this.state.members.length==0?arrowBack:checkmark}/>
+          <IonIcon icon={this.state.name==""?arrowBack:checkmark}/>
         </IonFabButton>
       </IonFab>
       <IonCard>
@@ -88,32 +55,53 @@ class GroupCreator extends Component {
           <IonThumbnail slot="start">
             <IonImg src={people}></IonImg>
           </IonThumbnail>
-          <IonTitle>{this.state.group}</IonTitle>
+          <IonTitle>Group Name: {this.state.name==""?<i>Name</i>:this.state.name}</IonTitle>
         </IonItem>
         <IonItem>
-          <IonInput id="namegroup" type="text"placeholder="Name"></IonInput>
+          <IonInput id="namegroup" type="text" placeholder="Name"></IonInput>
           <IonButton onClick={() => this.nameGroup()}>Rename group</IonButton>
         </IonItem>
       </IonCard>
       <IonCard>
         <IonItem>
-          <IonTitle>Members ({this.state.members.length}):</IonTitle>
+          <IonTitle>Adding members:</IonTitle>
         </IonItem>
-        <IonList>
-          {this.state.members.map((member, index) => (
-            <IonItem key={member}>
-              <IonLabel>{member}</IonLabel>
-              <IonButton color="danger" onClick={() => this.subMember(index)}>Remove</IonButton>
-            </IonItem>
-          ))}
+        {this.state.name=="" && (
           <IonItem>
-            <IonInput id="addmem" type="text" placeholder="Name"></IonInput>
-            <IonButton onClick={() => this.addMember()}>Add member</IonButton>
+            Before you can add members, you need to give the group a name.
           </IonItem>
-        </IonList>
+        )}
+        {this.state.name!="" && (<>
+          <IonItem>
+            Click the (✓) button to create the group "{this.state.name}".
+            As the creator, you will be added to it automatically.
+          </IonItem>
+          <IonItem>
+            To add other people, give them the code listed on the Groups page.
+            They must enter the code via (HOWEVER WE DO IT).
+          </IonItem>
+        </>)}
       </IonCard>
     </>);
   }
 }
+
+/*<IonCard>
+  <IonItem>
+    <IonTitle>Members ({this.state.members.length}):</IonTitle>
+  </IonItem>
+  <IonList>
+    {this.state.members.map((member, index) => (
+      <IonItem key={member}>
+        <IonLabel>{member}</IonLabel>
+        <IonButton color="danger" onClick={() => this.subMember(index)}>Remove</IonButton>
+      </IonItem>
+    ))}
+    <IonItem>
+      <IonInput id="addmem" type="text" placeholder="Name"></IonInput>
+      <IonButton onClick={() => this.addMember()}>Add member</IonButton>
+    </IonItem>
+  </IonList>
+</IonCard>*/
 
 export default GroupCreator;
