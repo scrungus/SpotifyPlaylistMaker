@@ -45,13 +45,15 @@ app.add_middleware(
 
 def keepConnectionAlive():
     print("Connection alive thread")
+    global db
     while(True):
-        time.sleep(10)
+        time.sleep(3)
         try:
             cursor = db.connection.cursor()
             cursor.execute("SELECT 1")
-        except Exception: 
-            db.connection.reconnect()
+        except:
+            db.connection.close()
+            db = server_interface.DatabaseConnector()
 
 
 keepAliveThread = threading.Thread(target=keepConnectionAlive, daemon=True)

@@ -55,7 +55,7 @@ class DatabaseConnector:
                 auth_plugin='mysql_native_password'
 
             )
-
+            connection.cursor().execute("SET SESSION MAX_EXECUTION_TIME=1000")
             print("Connection to MySQL DB successful")
 
         except mysql.connector.Error as err:
