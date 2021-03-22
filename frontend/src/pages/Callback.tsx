@@ -1,13 +1,23 @@
 import React, { useContext } from 'react';
-import { IonPage, IonButton } from '@ionic/react';
+import { IonPage, IonButton, IonContent, IonIcon, IonLabel } from '@ionic/react';
 import { RouteComponentProps } from 'react-router-dom';
 import { UserContext } from "../App";
 import { get } from '../hooks/useGroupStorage';
 import { sendRequest } from '../hooks/requestManager';
+import { personCircle } from 'ionicons/icons';
 
 interface UserDetailPageProps extends RouteComponentProps<{
   id: string;
 }> {}
+
+function setCookie(data: object, maxAge: number) {
+  // document.cookie = `data=;expires=${new Date(0)};path=/`;
+  var d = new Date();
+  d.setTime(d.getTime() + maxAge);
+  var expires = "expires" + d.toUTCString();
+  console.log(data);
+  document.cookie = "data=" + JSON.stringify(data) + ";expires=" + expires + ";path=/";
+}
 
 const Callback: React.FC<UserDetailPageProps> = ({match}) => {
   console.log("Callback");
@@ -19,40 +29,40 @@ const Callback: React.FC<UserDetailPageProps> = ({match}) => {
      and password. We want probably want to make the request to the
      auth service from here. */
 
-  if (match.params.id !== undefined){
+  if (match.params.id !== undefined) {
     sendRequest("GET", "getUserBySpotifyID", { spotifyID: match.params.id }, "currentUser");
   
     const cUserPromise = get("currentUser");
-    cUserPromise.then((val) =>{
-    try{
+    cUserPromise.then((val) => {
+    try {
       console.log("val: ",val);
       val = JSON.parse(val);
-      if(!val.success){
+      if (val !== null && val.success) {
+        setCookie(val.data, 3600000);
+        if (val && val['spotifyID'] === JSON.parse(document.cookie.split('; ')[0].slice(5)).spotify_id) {
+          user.setIsLoggedIn(true);
+          window.location.href = "/main_tabs";
+        }
+      } else {
         console.log("user doesnt exist");
-      }else{
-        document.cookie = JSON.stringify(val.data);
       }
     }
-    catch(e){
+    catch(e) {
       console.error(e);
       console.log("invalid user data");
     } 
     });
-  }
 
-  if(document.cookie){
-    const cUserPromise = get("currentUser");
-    cUserPromise.then((val) =>{
-      if(val && val['spotifyID'] === JSON.parse(document.cookie).spotify_id){
-        user.setIsLoggedIn(true);
-      }
-    }); 
+
+    // redirectWindow.close();
+    // user.setIsLoggedIn(true);
   }
+  
+
+
 
   return (
     <IonPage>
-      <h1>SpotifyPlaylistMaker</h1>
-      <IonButton>CALLBACK PAGE</IonButton>
     </IonPage>
   );
 }
