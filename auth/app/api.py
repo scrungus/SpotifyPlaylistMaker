@@ -82,8 +82,8 @@ async def callback(request : Request):
 
         # httpx.post('http://spotifyplaylistmaker_database_1:8002/addUser',json=results)   
         with httpx.Client() as client:
-            headers = {'X-Custom': 'value'}
             r = client.post('http://spotifyplaylistmaker_database_1:8002/addUser', json=results)
+            
         print("Success!")
 
     else:
