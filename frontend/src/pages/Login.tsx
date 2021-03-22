@@ -94,8 +94,8 @@ const Login: React.FC<UserDetailPageProps> = ({match}) => {
       // Best I could do, only works after authentication
       redirectWindow.addEventListener('pageshow', (e) => {
         if (e) {
-          //redirectWindow.close();
-          //user.setIsLoggedIn(true);
+          redirectWindow.close();
+          user.setIsLoggedIn(true);
         }
       });
     });

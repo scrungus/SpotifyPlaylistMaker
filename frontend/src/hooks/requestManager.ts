@@ -26,6 +26,7 @@ export function sendRequest(type: "GET" | "POST", route: string, params_or_body:
   const http = new XMLHttpRequest();
   switch (type) {
     case "GET": {
+      console.log("sending request ...")
       const params = parse(params_or_body);
       const url = `http://localhost:8002/${route}?${params}`;
       http.open(type, url);
@@ -42,6 +43,7 @@ export function sendRequest(type: "GET" | "POST", route: string, params_or_body:
   }
 
   http.onreadystatechange = (e) => {
+    console.log("Received ! : ",http.response);
     if (storageKey) {
       set(storageKey, http.response);
     }
