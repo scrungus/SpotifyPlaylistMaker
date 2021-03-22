@@ -7,7 +7,7 @@ fastapi == 0.63.0
 httpx == 0.17.1
 
 # auth/app/api.py: 4,5
-spotipy == 2.16.1
+spotipy == 2.17.1
 
 # auth/app/api.py: 2
 starlette == 0.13.6
