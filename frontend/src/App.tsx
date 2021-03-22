@@ -41,6 +41,19 @@ const user: IUserManager = {
 
 export const UserContext = React.createContext<IUserManager>(user);
 
+class DebugRouter extends IonReactRouter {
+  constructor(props : any){
+    super(props);
+    console.log('initial history is: ', JSON.stringify(this.history, null,2))
+    this.history.listen((location, action)=>{
+      console.log(
+        `The current URL is ${location.pathname}${location.search}${location.hash}`
+      )
+      console.log(`The last navigation action was ${action}`, JSON.stringify(this.history, null,2));
+    });
+  }
+}
+
 const IonicApp: React.FC = () => {
   /* Depending on whether isLoggedIn is false or true, the page will
      either become the login screen with no tab bar, or the original
@@ -53,18 +66,16 @@ const IonicApp: React.FC = () => {
   // then remove the exact path="/create_group" line.
   return (
     <IonApp>
-      <IonReactRouter>
+      <DebugRouter>
         <IonRouterOutlet>
-          <Route path="/callback" component={Callback} />
           <Route exact path="/login" component={Login} />
+          <Redirect exact from="/" to="/login"/>
           <Route exact path="/main_tabs" component={MainTabs} />
+          <Route path="/callback/:id" component={Callback} />
           {/* <Route path="/:id" component={isLoggedIn ? MainTabs : Login} /> */}
           <Route exact path="/create_group" component={CreateGroup} />
-          <Route exact path="/">
-            <Redirect to="/login"/>
-          </Route>
         </IonRouterOutlet>
-      </IonReactRouter>
+      </DebugRouter>
     </IonApp>
   );
 };

@@ -53,6 +53,7 @@ const Login: React.FC = () => {
     authRequest();
     const link = get("redirectLink");
     link.then((url) => {
+      console.log("redirect : ",url);
       const redirectWindow = window.open(url)!;
       // Best I could do, only works after authentication
       redirectWindow.addEventListener('pageshow', (e) => {

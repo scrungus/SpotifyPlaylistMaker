@@ -10,6 +10,7 @@ interface UserDetailPageProps extends RouteComponentProps<{
 }> {}
 
 const Callback: React.FC<UserDetailPageProps> = ({match}) => {
+  console.log("Callback");
   const user = useContext(UserContext);
 
   console.log("id :: " + match.params.id); 
@@ -50,6 +51,7 @@ const Callback: React.FC<UserDetailPageProps> = ({match}) => {
 
   return (
     <IonPage>
+      <h1>SpotifyPlaylistMaker</h1>
       <IonButton>CALLBACK PAGE</IonButton>
     </IonPage>
   );
