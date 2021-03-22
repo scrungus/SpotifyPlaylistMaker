@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { IonPage, IonButton, IonContent, IonIcon, IonLabel } from '@ionic/react';
 import { RouteComponentProps } from 'react-router-dom';
 import { UserContext } from "../App";
@@ -15,7 +15,6 @@ function setCookie(data: object, maxAge: number) {
   var d = new Date();
   d.setTime(d.getTime() + maxAge);
   var expires = "expires" + d.toUTCString();
-  console.log(data);
   document.cookie = "data=" + JSON.stringify(data) + ";expires=" + expires + ";path=/";
 }
 
@@ -29,34 +28,41 @@ const Callback: React.FC<UserDetailPageProps> = ({match}) => {
      and password. We want probably want to make the request to the
      auth service from here. */
 
-  if (match.params.id !== undefined) {
-    sendRequest("GET", "getUserBySpotifyID", { spotifyID: match.params.id }, "currentUser");
+  useEffect(() => {
+    if (match.params.id !== undefined) {
+      sendRequest("GET", "getUserBySpotifyID", { spotifyID: match.params.id }, "currentUser");
   
-    const cUserPromise = get("currentUser");
-    cUserPromise.then((val) => {
-    try {
-      console.log("val: ",val);
-      val = JSON.parse(val);
-      if (val !== null && val.success) {
-        setCookie(val.data, 3600000);
-        if (val && val['spotifyID'] === JSON.parse(document.cookie.split('; ')[0].slice(5)).spotify_id) {
-          user.setIsLoggedIn(true);
-          window.location.href = "/main_tabs";
+      const cUserPromise = get("currentUser");
+      cUserPromise.then((val) => {
+        try {
+          console.log("val: ",val);
+          val = JSON.parse(val);
+          if (val.success) {
+            setCookie(val.data, 3600000);
+            if (val.data.spotify_id === JSON.parse(document.cookie.split('; ')[0].slice(5)).spotify_id) {
+              console.log("user logged in")
+              user.setIsLoggedIn(true);
+              window.location.href = "/main_tabs";
+            }
+          } else {
+            console.log("user doesnt exist");
+          }
         }
-      } else {
-        console.log("user doesnt exist");
-      }
+        catch(e) {
+          console.error(e);
+          console.log("invalid user data");
+        } 
+      });
     }
-    catch(e) {
-      console.error(e);
-      console.log("invalid user data");
-    } 
-    });
+  }, []);
+
+
+
+    
 
 
     // redirectWindow.close();
     // user.setIsLoggedIn(true);
-  }
   
 
 
