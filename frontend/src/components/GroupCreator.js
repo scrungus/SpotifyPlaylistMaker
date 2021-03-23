@@ -55,14 +55,14 @@ class GroupCreator extends Component {
           <IonThumbnail slot="start">
             <IonImg src={people}></IonImg>
           </IonThumbnail>
-          <IonTitle>Group Name: {this.state.name==""?<i>Name</i>:this.state.name}</IonTitle>
+          <IonTitle>{this.state.name==""?"Create Group":this.state.name}</IonTitle>
         </IonItem>
         <IonItem>
-          <IonInput id="namegroup" type="text" placeholder="Name"></IonInput>
-          <IonButton onClick={() => this.nameGroup()}>Rename group</IonButton>
+          <IonInput id="namegroup" type="text" placeholder="Name Your Group"></IonInput>
+          <IonButton onClick={() => this.nameGroup()}>Create Group</IonButton>
         </IonItem>
       </IonCard>
-      {/* <IonCard>
+       <IonCard>
         <IonItem>
           <IonTitle>Adding members:</IonTitle>
         </IonItem>
@@ -102,6 +102,6 @@ class GroupCreator extends Component {
       <IonButton onClick={() => this.addMember()}>Add member</IonButton>
     </IonItem>
   </IonList>
-</IonCard>*/
+    </IonCard>*/
 
 export default GroupCreator;
