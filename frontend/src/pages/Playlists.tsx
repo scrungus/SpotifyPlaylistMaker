@@ -7,9 +7,10 @@ import { sendRequest } from '../hooks/requestManager'
 import { get } from "../hooks/useGroupStorage";
 
 interface Playlist {
-  name: string
+  playlist_id: number
   link: string
-  icon: null
+  spotifyID: string
+  groupID: string
 }
 
 // async function getPlaylistData(link: string){
@@ -56,23 +57,48 @@ async function getUsersPlaylists(userId: number | string): Promise<Playlist[]> {
 
 const Playlists: React.FC = () => {
 
-  const [playlists, setPlaylists] = useState<Playlist[]>([]);
+  const [playlists, setPlaylists] = useState<Array<Playlist>>([]);
 
   // const getModal = (group: Group) => {
   //   setSelectedGroup(group);
   //   setShowModal(true);
   // }
 
-  const currUserID = JSON.parse(document.cookie.split('; ')[0].slice(5)).spotify_id
+  const currUser = JSON.parse(document.cookie.split('; ')[0].slice(5))
+  const currUserID = currUser.spotify_id;
+  const currUserAuth = currUser.spotify_auth;
   console.log(currUserID);
-  console.log(sendRequest("GET", "getUserPlaylists", { id: currUserID }, "playlists"));
 
   useEffect(() => {
-    console.log(playlists);
-  }, [playlists]);
+    sendRequest("GET", "getUserPlaylists", { id: currUserID }, "playlists");
+    get("playlists")
+    .then((val) => {
+      console.log(val);
+      if(val){
+        val = JSON.parse(val);
+      }else {
+        console.error("Couldnt parse");
+        return;
+      }
+      if(val.success){
+        let data = val.data as Array<Playlist>
+        console.log(data);
 
+        console.log("Getting playlist information");
+        console.log("playlists", val.data, playlists);
+        data.forEach((val, index) => {
+          console.log({ id: val.link, tkn: currUserAuth });
+          sendRequest("GET", "getplaylistinfo", { id: val.link, tkn: currUserAuth }, `playlistinfo${index}`, 8001);
 
+          get(`playlistinfo${index}`)
+          .then(val => {
+            console.log(val);
+          });
 
+        });
+      }
+    })
+  }, []);
 
   //let playlists = [{name: "p1", link: "http://www.google.com", icon: null}, {name: "p2", link: "http://www.spotify.com", icon: null}];
 
@@ -87,13 +113,6 @@ const Playlists: React.FC = () => {
       </IonHeader>
       <IonContent fullscreen>
         <IonList>
-          {playlists.map((play: any, index: number) => {
-            return (
-              <IonItem key={index}>
-                <PlaylistBox name={"name"} link={play[1]} icon={"icon"}></PlaylistBox>
-              </IonItem>
-            )
-          })}
         </IonList>
       </IonContent>
     </IonPage>
@@ -101,15 +120,18 @@ const Playlists: React.FC = () => {
 }
 
 /*
+
+
+          {playlists.map((play: any, index: number) => {
+            return (
+              <IonItem key={index}>
+                <PlaylistBox name={"name"} link={play[1]} icon={"icon"}></PlaylistBox>
+              </IonItem>
+            )
+          })}
+
 {
-            {
-        playlists: [
-          { name: "p1", link: "http://www.google.com", icon: null },
-          { name: "p2", link: "http://www.spotify.com", icon: null }
-        ]
-      }
-          } 
-          */
+*/
 
 
 export default Playlists;
