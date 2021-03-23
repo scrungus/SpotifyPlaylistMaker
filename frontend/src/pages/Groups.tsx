@@ -50,17 +50,11 @@ const Groups: React.FC = () => {
   const [groups, setGroups] = useState<Group[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState({group_code: "", group_name: ""});
-  const [code, setCode] = useState<string>("");
+  
 
   const getModal = (group: Group) => {
     setSelectedGroup(group);
     setShowModal(true);
-  }
-
-  const joinGroup = (groupCode: string) => {
-    const userID = JSON.parse(document.cookie).spotifyID.spotify_id;
-    const params = { groupCode: groupCode, userID: userID };
-    sendRequest("POST", "addGroupMember", params, "addmember");
   }
 
   useEffect(() => {

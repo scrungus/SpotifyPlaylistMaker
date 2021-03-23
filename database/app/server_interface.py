@@ -235,10 +235,17 @@ class DatabaseConnector:
         if(len(res) == 0):
             return {"success": False, "data": None, "error": "No Groups"}
 
+        out = []
+        for r in res:
+            out.append({
+                "Invite Code" : hashForward(r[0]),
+                "Creator" : r[1],
+                "Name" : r[2]
+            })
         return ({
             
             "success": True, 
-            "data": res,
+            "data": out,
             "error": ""})
 
     def addGroupMember(self, spotifyID: str, groupCode: str):

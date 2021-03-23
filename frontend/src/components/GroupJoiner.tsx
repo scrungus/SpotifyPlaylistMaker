@@ -27,23 +27,15 @@ interface Member {
   username: string;
 }
 
-async function getGroupMembers(groupCode: number | string): Promise<Member[]> {
-  const params = {
-    groupCode: groupCode
-  }
-
-  sendRequest("GET", "getGroupMembers", params, "members");
-  const members = await get("members");
-  return JSON.parse(members)['data']['users'];
+const joinGroup = (groupCode: string) => {
+  const userID = JSON.parse(document.cookie.split('; ')[0].slice(5)).spotify_id;
+  const params = { groupCode: groupCode, spotifyID: userID };
+  sendRequest("POST", "addGroupMember", params, "addmember");
 }
-
-/* async function getGroupPhoto(){
-  return people;
-}
- */
 
  // Component displayed in modal after group is tapped in Groups tab
 const GroupJoiner: React.FC = props => {
+  const [code, setCode] = useState<string>("");
   /* const uploadedImage = useRef<typeof IonImg>(null);
   const imageUploader = useRef<HTMLInputElement>(null); */
 
@@ -85,8 +77,8 @@ const GroupJoiner: React.FC = props => {
             </IonItem>
             <IonList>
                 <IonItem>
-                    <IonInput id="joinGrp" type="text" placeholder="Enter an Invite Code"></IonInput>
-                    <IonButton >Join Group</IonButton>
+                    <IonInput id="joinGrp" type="text" placeholder="Enter an Invite Code" onIonChange={e => setCode(e.detail.value!)} ></IonInput>
+                    <IonButton onClick={() => joinGroup(code)}>Join Group</IonButton>
                 </IonItem>
             </IonList>
         </IonCard>
