@@ -99,11 +99,11 @@ const Groups: React.FC = () => {
               <GroupContainer groupName={group.group_name}/>
             </IonItem>
           ))}
-          <IonItem>
+         {/*  <IonItem>
             <IonInput value={code} placeholder="Group code"
               onIonChange={e => setCode(e.detail.value!)}></IonInput>
             <IonButton onClick={() => joinGroup(code)}>Join group with code</IonButton>
-          </IonItem>
+          </IonItem> */}
         </IonList>
       </IonContent>
     </IonPage>

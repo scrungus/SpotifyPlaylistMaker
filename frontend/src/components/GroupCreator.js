@@ -35,7 +35,6 @@ class GroupCreator extends Component {
   saveGroup = () => {
     const name = this.state.name;
     if (name=="") {
-      alert("Cannot create an unnamed group.");
       return;
     }
     const creatorID = JSON.parse(document.cookie).spotifyID.spotify_id;
