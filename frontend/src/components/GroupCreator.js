@@ -8,11 +8,13 @@ import {
   IonImg,
   IonInput,
   IonItem,
+  IonText,
   IonThumbnail,
   IonTitle,
 } from '@ionic/react';
 import { arrowBack, checkmark, people } from 'ionicons/icons';
 import { sendRequest } from '../hooks/requestManager';
+import './GroupCreator.css';
 
 class GroupCreator extends Component {
 
@@ -37,11 +39,11 @@ class GroupCreator extends Component {
     if (name=="") {
       return;
     }
-    const creatorID = JSON.parse(document.cookie).spotifyID.spotify_id;
+    const creatorID = JSON.parse(document.cookie.split('; ')[0].slice(5)).spotify_id;
     const params = { name: name, creatorID: creatorID };
     sendRequest("POST", "addGroup", params, "addgroup");
   }
-
+  //
   render() {
     return (<>
       <IonFab vertical="top" horizontal="end" slot="fixed" edge>
@@ -60,12 +62,33 @@ class GroupCreator extends Component {
           <IonInput id="namegroup" type="text" placeholder="Name Your Group"></IonInput>
           <IonButton onClick={() => this.nameGroup()}>Create Group</IonButton>
         </IonItem>
-      </IonCard>
-       <IonCard>
-        <IonItem>
-          <IonTitle>Adding members:</IonTitle>
-        </IonItem>
         {this.state.name=="" && (
+          <IonItem >
+            <IonText color="medium">
+              Before you can add members, you need to give the group a name.
+            </IonText>
+          </IonItem>
+        )}
+        {this.state.name!="" && (<>
+          <IonItem>
+            <IonText color="medium">
+              Click the (✓) button to create the group "{this.state.name}".
+              As the creator, you will be added to it automatically.
+            </IonText>
+          </IonItem>
+          <IonItem>
+           <IonText color="medium">
+           To add other people, give them the code listed for {this.state.name} on your Groups page.
+            They must enter the code on their Groups page.
+           </IonText>
+          </IonItem>
+        </>)}
+      </IonCard>
+       {/*<IonCard>
+         <IonItem>
+          <IonTitle>Adding Members:</IonTitle>
+        </IonItem> */}
+        {/* {this.state.name=="" && (
           <IonItem>
             Before you can add members, you need to give the group a name.
           </IonItem>
@@ -79,8 +102,8 @@ class GroupCreator extends Component {
             To add other people, give them the code listed for {this.state.name} on your Groups page.
             They must enter the code on their Groups page.
           </IonItem>
-        </>)}
-      </IonCard>
+        </>)} 
+      </IonCard>*/}
     </>);
   }
 }

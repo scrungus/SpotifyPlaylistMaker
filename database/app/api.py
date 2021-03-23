@@ -118,6 +118,10 @@ class AddGroupRequest(BaseModel):
 async def addGroup(req: AddGroupRequest):
     return db.addGroup(req.name, req.creatorID)
 
+@app.get("/getAllGroups",tags=["getAllGroups"])
+async def getAllGroup():
+    return db.getAllGroups()
+
 class AddGroupMemberRequest(BaseModel):
     groupCode: str
     spotifyID: str

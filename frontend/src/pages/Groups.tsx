@@ -21,6 +21,7 @@ import { get } from '../hooks/useGroupStorage';
 import { sendRequest } from '../hooks/requestManager';
 import './Groups.scss';
 import GroupView from '../components/GroupView';
+import { getgroups } from 'node:process';
 
 interface Group {
   group_code: string;
@@ -31,14 +32,17 @@ async function getUsersGroups(userId: number | string): Promise<Group[]> {
   const params = {
     spotifyID: userId
   }
-
+/*   console.log("Trying to get groups...");
+  console.log("User ID :",userId); */
   sendRequest("GET", "getUsersGroupsBySpotifyID", params, "groups");
-  const groups = get("groups");
-  groups.then((val) => {
-    if(val !== null && val['success']){
-      return JSON.parse(val)['data'];
-    }
-  })
+  const groups = await get("groups");
+ /*  console.log("Groups om getUSersGroups : ",groups);
+  console.log("parse : ",JSON.parse(groups)['data']); */
+  if(groups !== null && JSON.parse(groups)['success']){
+    console.log("returning groups");
+    return JSON.parse(groups)['data'];
+  }
+  /* console.log("returning empty"); */
   return [];
 }
 
@@ -63,10 +67,13 @@ const Groups: React.FC = () => {
     const currUserID = JSON.parse(document.cookie.split('; ')[0].slice(5)).spotify_id;
     const groups_promise = getUsersGroups(currUserID);
     groups_promise.then((values) => {
+      console.log("Groups : ",values);
       if (values !== null) {
         setGroups(values);
+        
       }
-    });
+    }
+    );
   }, []);
 
   return (
