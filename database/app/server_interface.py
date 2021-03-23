@@ -56,6 +56,7 @@ class DatabaseConnector:
 
             )
             connection.cursor().execute("SET SESSION MAX_EXECUTION_TIME=1000")
+            connection.autocommit = True
             print("Connection to MySQL DB successful")
 
         except mysql.connector.Error as err:
