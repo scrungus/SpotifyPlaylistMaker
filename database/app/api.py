@@ -134,6 +134,10 @@ async def addGroupMember(req: AddGroupMemberRequest):
 async def getGroupMembers(groupCode: str):
     return db.getGroupMembers(groupCode)
 
+@app.get("/getAllGroupMembers",tags=['getAllGroupMembers'])
+async def getAllGroupMembers():
+    return db.getAllGroupMembers()
+
 @app.get("/getUsersGroupsByID", tags=["getUserGroupsByID"])
 async def getUsersGroupsByID(id: int):
     return db.getUsersGroups(id=id)

@@ -248,6 +248,22 @@ class DatabaseConnector:
             "data": out,
             "error": ""})
 
+    def getAllGroupMembers(self):
+        sql = "SELECT * FROM group_members"
+    
+        cursor = self.connection.cursor()
+        cursor.execute(sql)
+        res = cursor.fetchall()
+
+        if(len(res) == 0):
+            return {"success": False, "data": None, "error": "No Groups"}
+
+        return ({
+            
+            "success": True, 
+            "data": res,
+            "error": ""})
+
     def addGroupMember(self, spotifyID: str, groupCode: str):
         groupID = hashBack(groupCode)
         userData = self.getUser(spotifyID=spotifyID)
@@ -256,7 +272,7 @@ class DatabaseConnector:
             
         userID = userData["data"]["id"]
 
-        sql = "INSERT INTO group_members (group_id, user_id) VALUES (%(group_id)s, %(user_id)s)"
+        sql = "INSERT INTO group_members (user_id) VALUES (%(user_id)s) WHERE group_id=%(group_id)s "
         val = {"group_id": groupID, "user_id": userID}
         
         self.connection.cursor().execute(
@@ -315,7 +331,8 @@ class DatabaseConnector:
             FROM user_groups 
             INNER JOIN group_members 
             ON user_groups.group_id = group_members.group_id 
-            WHERE user_groups.creator=%(user_id)s 
+            WHERE user_groups.creator=%(user_id)s
+            
             """
 
         sql = """
