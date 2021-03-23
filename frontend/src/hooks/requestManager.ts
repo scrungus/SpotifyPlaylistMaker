@@ -43,7 +43,7 @@ export function sendRequest(type: "GET" | "POST", route: string, params_or_body:
   }
 
   http.onreadystatechange = (e) => {
-    console.log("Received ! : ",http.response);
+    //console.log("Received ! : ",http.response);
     if (storageKey) {
       set(storageKey, http.response);
     }

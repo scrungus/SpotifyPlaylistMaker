@@ -1,12 +1,15 @@
-import { IonContent, IonHeader, IonItem, IonList, IonPage, IonTitle, IonToolbar } from '@ionic/react';
+import { IonContent, IonFab, IonFabButton, IonHeader, IonIcon, IonItem, IonList, IonPage, IonTitle, IonToolbar } from '@ionic/react';
 import PlaylistBox from '../components/PlaylistContainer';
 import './Playlists.css';
 import React, { useEffect, useState } from 'react';
-import { contrastOutline } from 'ionicons/icons';
-import { sendRequest } from '../hooks/requestManager' 
-import { get } from "../hooks/useGroupStorage";
+import { contrastOutline, refresh } from 'ionicons/icons';
+import { sendRequest } from '../hooks/requestManager'
+import { get, set } from "../hooks/useGroupStorage";
+import { refreshCircle } from 'ionicons/icons';
 
 interface Playlist {
+  name: string
+  icon: string
   playlist_id: number
   link: string
   spotifyID: string
@@ -45,7 +48,7 @@ async function getUsersPlaylists(userId: number | string): Promise<Playlist[]> {
   sendRequest("GET", "getUserPlaylists", params, "playlists")
   const playlists = get("playlists");
   playlists.then((val) => {
-    if(val.success){
+    if (val.success) {
       return JSON.parse(val).data;
     }
   })
@@ -53,11 +56,10 @@ async function getUsersPlaylists(userId: number | string): Promise<Playlist[]> {
 }
 
 
-
-
 const Playlists: React.FC = () => {
 
   const [playlists, setPlaylists] = useState<Array<Playlist>>([]);
+  const [refreshPlaylists, setRefresh] = useState<number>(0);
 
   // const getModal = (group: Group) => {
   //   setSelectedGroup(group);
@@ -70,35 +72,57 @@ const Playlists: React.FC = () => {
   console.log(currUserID);
 
   useEffect(() => {
+    console.log("HERE");
+    let cancel = false;
     sendRequest("GET", "getUserPlaylists", { id: currUserID }, "playlists");
     get("playlists")
-    .then((val) => {
-      console.log(val);
-      if(val){
-        val = JSON.parse(val);
-      }else {
-        console.error("Couldnt parse");
-        return;
-      }
-      if(val.success){
-        let data = val.data as Array<Playlist>
-        console.log(data);
+      .then((val) => {
+        if (cancel) {
+          return;
+        }
+        console.log(val);
+        if (val && val != "") {
+          val = JSON.parse(val);
+        } else {
+          console.error("Couldnt parse");
+          return;
+        }
+        if (val.success) {
+          let data = val.data as Array<Playlist>
+          let resolveCount = 0;
+          let failedCount = 0;
+          data.forEach((play, index) => {
+            sendRequest("GET", "getplaylistinfo", { id: play.link, tkn: currUserAuth }, `playlistinfo${index}`, 8001);
 
-        console.log("Getting playlist information");
-        console.log("playlists", val.data, playlists);
-        data.forEach((val, index) => {
-          console.log({ id: val.link, tkn: currUserAuth });
-          sendRequest("GET", "getplaylistinfo", { id: val.link, tkn: currUserAuth }, `playlistinfo${index}`, 8001);
+            get(`playlistinfo${index}`)
+              .then(val => {
+                if (cancel) {
+                  return;
+                }
+                if (val) {
+                  try {
+                    let playlistInfo = JSON.parse(val);
+                    data[index].name = playlistInfo.name;
+                    data[index].link = playlistInfo.external_urls.spotify;
+                    resolveCount++;
+                  } catch {
+                    failedCount++;
+                  } finally {
+                    if (resolveCount == data.length - failedCount) {
+                      setPlaylists(data);
+                    }
+                  }
 
-          get(`playlistinfo${index}`)
-          .then(val => {
-            console.log(val);
+                }
+              });
+
           });
-
-        });
-      }
-    })
-  }, []);
+        }
+      })
+    return () => {
+      cancel = true;
+    }
+  }, [refreshPlaylists]);
 
   //let playlists = [{name: "p1", link: "http://www.google.com", icon: null}, {name: "p2", link: "http://www.spotify.com", icon: null}];
 
@@ -113,7 +137,19 @@ const Playlists: React.FC = () => {
       </IonHeader>
       <IonContent fullscreen>
         <IonList>
+          {playlists.map((play: any, index: number) => {
+            return (
+              <IonItem key={index}>
+                <PlaylistBox name={play.name} link={play.link} icon={"icon"}></PlaylistBox>
+              </IonItem>
+            )
+          })}
         </IonList>
+        <IonFab vertical="top" horizontal="end" slot="fixed" edge>
+          <IonFabButton onClick={() => {setRefresh(Date.now())}}>
+            <IonIcon icon={refreshCircle} />
+          </IonFabButton>
+        </IonFab>
       </IonContent>
     </IonPage>
   );
@@ -122,13 +158,7 @@ const Playlists: React.FC = () => {
 /*
 
 
-          {playlists.map((play: any, index: number) => {
-            return (
-              <IonItem key={index}>
-                <PlaylistBox name={"name"} link={play[1]} icon={"icon"}></PlaylistBox>
-              </IonItem>
-            )
-          })}
+          
 
 {
 */
