@@ -5,9 +5,9 @@ import {
   IonRouterOutlet
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
+import Login from './pages/Login';
 import Callback from './pages/Callback';
 import MainTabs from './pages/MainTabs';
-import Login from './pages/Login';
 import CreateGroup from './pages/CreateGroup'
 
 /* Core CSS required for Ionic components to work properly */
