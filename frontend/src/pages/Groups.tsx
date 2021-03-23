@@ -1,18 +1,19 @@
 import { useState, useEffect } from 'react';
-import { 
+import {
   IonHeader,
   IonToolbar,
-  IonContent, 
-  IonIcon, 
-  IonPage, 
+  IonContent,
+  IonIcon,
+  IonPage,
   IonFab,
-  IonTitle, 
+  IonTitle,
   IonList,
   IonItem,
   IonFabButton,
   IonModal,
   IonButton,
-  IonButtons
+  IonButtons,
+  IonInput
 } from '@ionic/react';
 import './Groups.css';
 import GroupContainer from '../components/GroupContainer';
@@ -32,12 +33,13 @@ async function getUsersGroups(userId: number | string): Promise<Group[]> {
   }
 
   sendRequest("GET", 8002, "getUsersGroupsBySpotifyID", params, "groups");
-  const groups = get("groups");
-  groups.then((val) => {
-    if(val !== null && val['success']){
-      return JSON.parse(val)['data'];
-    }
-  })
+  const groups = await get("groups");
+
+  if(groups !== null && JSON.parse(groups)['success']){
+    console.log("returning groups");
+    return JSON.parse(groups)['data'];
+  }
+
   return [];
 }
 
@@ -45,6 +47,7 @@ const Groups: React.FC = () => {
   const [groups, setGroups] = useState<Group[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState({group_code: "", group_name: ""});
+  
 
   const getModal = (group: Group) => {
     setSelectedGroup(group);
@@ -55,10 +58,13 @@ const Groups: React.FC = () => {
     const currUserID = JSON.parse(document.cookie.split('; ')[0].slice(5)).spotify_id;
     const groups_promise = getUsersGroups(currUserID);
     groups_promise.then((values) => {
-      if (values !== null) { 
+      console.log("Groups : ",values);
+      if (values !== null) {
         setGroups(values);
+        
       }
-    });
+    }
+    );
   }, []);
 
   return (
@@ -91,6 +97,11 @@ const Groups: React.FC = () => {
               <GroupContainer groupName={group.group_name}/>
             </IonItem>
           ))}
+         {/*  <IonItem>
+            <IonInput value={code} placeholder="Group code"
+              onIonChange={e => setCode(e.detail.value!)}></IonInput>
+            <IonButton onClick={() => joinGroup(code)}>Join group with code</IonButton>
+          </IonItem> */}
         </IonList>
       </IonContent>
     </IonPage>

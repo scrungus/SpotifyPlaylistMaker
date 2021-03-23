@@ -7,7 +7,13 @@ import {
   IonContent, 
   IonTitle, 
   IonItem,
-  IonImg,} from '@ionic/react';
+  IonImg,
+  IonText,
+  IonGrid,
+  IonCol,
+  IonRouterContext,
+  IonRow,
+  IonButton,} from '@ionic/react';
 import { people } from 'ionicons/icons';
 import { get } from '../hooks/useStorage';
 import { sendRequest } from '../hooks/requestManager';
@@ -78,7 +84,23 @@ const GroupView: React.FC<ContainerProps> = props => {
         <IonImg /* ref={uploadedImage} */ src={people} /* onClick={() => imageUploader.current.click()} */>
         </IonImg>
       </IonItem>
-      <IonTitle>Members</IonTitle>
+      <IonItem>
+        <IonGrid>
+          <IonRow>
+          <IonCol>
+            <div className='ion-text-left'>
+            <IonText> Invite Code : </IonText>
+            </div>
+          </IonCol>
+          <IonCol>
+            <div className='ion-text-right'>
+            <IonText> {props.groupCode} </IonText>
+            </div>
+          </IonCol>
+          </IonRow>     
+        </IonGrid>   
+      </IonItem>
+      <IonTitle>Members</IonTitle>  
       {members.map((member, index: number) => (
         <IonItemSliding key={index}>
           <IonItem>

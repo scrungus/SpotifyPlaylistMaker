@@ -118,6 +118,10 @@ class AddGroupRequest(BaseModel):
 async def addGroup(req: AddGroupRequest):
     return db.addGroup(req.name, req.creatorID)
 
+@app.get("/getAllGroups",tags=["getAllGroups"])
+async def getAllGroup():
+    return db.getAllGroups()
+
 class AddGroupMemberRequest(BaseModel):
     groupCode: str
     spotifyID: str
@@ -129,6 +133,10 @@ async def addGroupMember(req: AddGroupMemberRequest):
 @app.get("/getGroupMembers", tags=["getGroupMembers"])
 async def getGroupMembers(groupCode: str):
     return db.getGroupMembers(groupCode)
+
+@app.get("/getAllGroupMembers",tags=['getAllGroupMembers'])
+async def getAllGroupMembers():
+    return db.getAllGroupMembers()
 
 @app.get("/getUsersGroupsByID", tags=["getUserGroupsByID"])
 async def getUsersGroupsByID(id: int):

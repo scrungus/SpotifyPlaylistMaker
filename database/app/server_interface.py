@@ -134,7 +134,7 @@ class DatabaseConnector:
         res = cursor.fetchall()
 
         if(len(res) == 0):
-            return {"success": False, "data": None, "error": "User doesnt exist"}
+            return {"success": False, "data": None, "error": "No Users"}
 
         return ({
             
@@ -197,26 +197,72 @@ class DatabaseConnector:
         return True
 
     def addGroup(self, name: str, creatorID: str):
-        if(self.getUser(spotifyID=creatorID)["success"] == False):
+
+        userData = self.getUser(spotifyID=creatorID)
+        if(userData["success"] == False):
             return {"success": False, "data": None, "error": "The creator doesnt exist"}
 
         if(self.checkGroupName(name, creatorID) == False):
             return {"success": False, "data": None, "error": "Group name already exists for that user"}
-        
 
         sql = "INSERT INTO user_groups (creator, group_name) VALUES (%(creator)s, %(name)s)"
         val = {"creator": creatorID, "name": name}
-
         cursor = self.connection.cursor()
         cursor.execute(sql, val)
         self.connection.commit()
 
         cursor = self.connection.cursor()
         cursor.execute("SELECT group_id FROM user_groups WHERE creator=%(creatorID)s", {"creatorID": creatorID})
+        self.connection.commit()
         res = cursor.fetchall()
+
+        sql = "INSERT INTO group_members (group_id, user_id) VALUES (%(group_id)s, %(user_id)s)"
+        val = {"group_id": res[0][0], "user_id":userData['data']['id']}
+        cursor = self.connection.cursor()
+        cursor.execute(sql, val)
+        self.connection.commit()
         
 
         return {"success": True, "data": hashForward(res[0][0]), "error": ""}
+
+    def getAllGroups(self):
+        sql = "SELECT * FROM user_groups"
+    
+        cursor = self.connection.cursor()
+        cursor.execute(sql)
+        res = cursor.fetchall()
+
+        if(len(res) == 0):
+            return {"success": False, "data": None, "error": "No Groups"}
+
+        out = []
+        for r in res:
+            out.append({
+                "Invite Code" : hashForward(r[0]),
+                "Creator" : r[1],
+                "Name" : r[2]
+            })
+        return ({
+            
+            "success": True, 
+            "data": out,
+            "error": ""})
+
+    def getAllGroupMembers(self):
+        sql = "SELECT * FROM group_members"
+    
+        cursor = self.connection.cursor()
+        cursor.execute(sql)
+        res = cursor.fetchall()
+
+        if(len(res) == 0):
+            return {"success": False, "data": None, "error": "No Groups"}
+
+        return ({
+            
+            "success": True, 
+            "data": res,
+            "error": ""})
 
     def addGroupMember(self, spotifyID: str, groupCode: str):
         groupID = hashBack(groupCode)
@@ -226,7 +272,7 @@ class DatabaseConnector:
             
         userID = userData["data"]["id"]
 
-        sql = "INSERT INTO group_members (group_id, user_id) VALUES (%(group_id)s, %(user_id)s)"
+        sql = "INSERT INTO group_members (user_id) VALUES (%(user_id)s) WHERE group_id=%(group_id)s "
         val = {"group_id": groupID, "user_id": userID}
         
         self.connection.cursor().execute(
@@ -279,20 +325,33 @@ class DatabaseConnector:
         if(res["success"] == False):
             return res
         user = res["data"]
-
+        print("user : ",user)
         sql = """
             SELECT user_groups.group_id, user_groups.group_name 
             FROM user_groups 
             INNER JOIN group_members 
             ON user_groups.group_id = group_members.group_id 
-            WHERE user_groups.creator=%(user_id)s 
-            OR group_members.user_id=%(user_id)s"""
-        val = {"user_id": user["id"]}
+            WHERE user_groups.creator=%(user_id)s
+            
+            """
 
+        sql = """
+            SELECT user_groups.group_id, user_groups.group_name 
+            FROM user_groups 
+            WHERE user_groups.creator=%(user_id)s
+        """
+        if id:
+            val = {"user_id": user["id"]}
+
+        elif spotify_id:
+            print("passing spotify id")
+            val = {"user_id": user["spotify_id"]}
+        
         cursor = self.connection.cursor()
         cursor.execute(sql, val)
         res = cursor.fetchall()
         out = []
+        print("res :",res)
         for r in res:
             out.append({
                 "group_code": hashForward(r[0]),
