@@ -6,11 +6,9 @@ import {
   IonLabel,
   IonButton
 } from '@ionic/react';
-import { authRequest, sendRequest } from '../hooks/requestManager';
+import { authRequest } from '../hooks/requestManager';
 import { get } from '../hooks/useGroupStorage';
 import { personCircle } from 'ionicons/icons';
-import { InAppBrowser } from '@ionic-native/in-app-browser';
-import { RouteComponentProps } from 'react-router-dom';
 
 // CSS stuff to centralise the UI.
 import './Login.css';
@@ -36,27 +34,18 @@ import { UserContext } from "../App";
 
 /* Theme variables */
 import '../theme/variables.css';
-import { exception } from "node:console";
-import { parse } from "node:url";
-
-interface UserDetailPageProps extends RouteComponentProps<{
-  id: string;
-}> {}
 
 const Login: React.FC = () => {
   //const [userName, setUserName] = useState<string>("");
   //const [password, setPassword] = useState<string>("");
-  const user = useContext(UserContext);
+  useContext(UserContext);
 
 
   const loginClick = () => {
     authRequest();
     const link = get("redirectLink");
     link.then((url) => {
-      const redirectWindow = window.open(url)!;
-      window.close();
-      // Best I could do, only works after authentication
-      
+      window.open(url)!;
     });
   };
 
