@@ -39,32 +39,32 @@ const MainTabs: React.FC = () => (
     <IonReactRouter>
       <IonTabs>
         <IonRouterOutlet>
-          <Route exact path="/groups">
+          <Route exact path="/main_tabs/groups">
             <Groups />
           </Route>
-          <Route exact path="/playlists">
+          <Route exact path="/main_tabs/playlists">
             <Playlists />
           </Route>
-          <Route exact path="/settings">
+          <Route exact path="/main_tabs/settings">
             <Settings />
           </Route>
-          <Route exact path="/create_group">
+          {/* <Route exact path="/create_group">
             <CreateGroup />
-          </Route>
-          <Route exact path="/">
-            <Redirect to="/groups"/>
+          </Route> */}
+          <Route exact path="/main_tabs">
+            <Redirect to="/main_tabs/groups"/>
           </Route>
         </IonRouterOutlet>
         <IonTabBar slot="bottom">
-          <IonTabButton tab="groups" href="/groups">
+          <IonTabButton tab="groups" href="/main_tabs/groups">
             <IonIcon icon={people} />
             <IonLabel>Groups</IonLabel>
           </IonTabButton>
-          <IonTabButton tab="playlists" href="/playlists">
+          <IonTabButton tab="playlists" href="/main_tabs/playlists">
             <IonIcon icon={menu} />
             <IonLabel>Playlists</IonLabel>
           </IonTabButton>
-          <IonTabButton tab="settings" href="/settings">
+          <IonTabButton tab="settings" href="/main_tabs/settings">
             <IonIcon icon={settings} />
             <IonLabel>Settings</IonLabel>
           </IonTabButton>

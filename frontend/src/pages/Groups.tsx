@@ -33,8 +33,13 @@ async function getUsersGroups(userId: number | string): Promise<Group[]> {
   }
 
   sendRequest("GET", "getUsersGroupsBySpotifyID", params, "groups");
-  const groups = await get("groups");
-  return JSON.parse(groups)['data'];
+  const groups = get("groups");
+  groups.then((val) => {
+    if(val !== null && val['success']){
+      return JSON.parse(val)['data'];
+    }
+  })
+  return [];
 }
 
 const Groups: React.FC = () => {
@@ -55,7 +60,7 @@ const Groups: React.FC = () => {
   }
 
   useEffect(() => {
-    const currUserID = JSON.parse(document.cookie).spotifyID.spotify_id;
+    const currUserID = JSON.parse(document.cookie.split('; ')[0].slice(5)).spotify_id;
     const groups_promise = getUsersGroups(currUserID);
     groups_promise.then((values) => {
       if (values !== null) {

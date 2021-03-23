@@ -51,10 +51,12 @@ class DatabaseConnector:
 
                 password=userPassword,
                 database=database,
-                buffered=True
+                buffered=True,
+                auth_plugin='mysql_native_password'
 
             )
-
+            connection.cursor().execute("SET SESSION MAX_EXECUTION_TIME=1000")
+            connection.autocommit = True
             print("Connection to MySQL DB successful")
 
         except mysql.connector.Error as err:
@@ -110,8 +112,8 @@ class DatabaseConnector:
                 "spotify_auth": spotifyAuth,
                 "spotify_id": spotifyID
                 })
-
-            return
+            self.connection.commit()
+            return {"success": True, "error": ""}
 
         sql = "INSERT INTO users (username, spotify_auth, spotify_id) VALUES (%(username)s, %(spotify_auth)s, %(spotify_id)s)"
         val = {"username": username,
@@ -255,7 +257,7 @@ class DatabaseConnector:
         users = []
         for ID in userIDs:
             res = self.getUser(id=ID[0])["data"]
-            if(len(res) > 0):
+            if(res and len(res) > 0):
                 users.append({"id": res["id"], "username": res["username"]})
         
 

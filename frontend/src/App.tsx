@@ -1,10 +1,11 @@
 import React, { useState, useContext } from "react";
-import { Route } from 'react-router-dom';
+import { Redirect, Route } from 'react-router-dom';
 import {
   IonApp,
   IonRouterOutlet
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
+import Callback from './pages/Callback';
 import MainTabs from './pages/MainTabs';
 import Login from './pages/Login';
 import CreateGroup from './pages/CreateGroup'
@@ -54,9 +55,11 @@ const IonicApp: React.FC = () => {
     <IonApp>
       <IonReactRouter>
         <IonRouterOutlet>
-          <Route exact path="/login" component={Login} />
-          <Route path="/:id?" component={isLoggedIn ? MainTabs : Login} />
-          <Route exact path="/create_group" component={CreateGroup} />
+          <Route exact path="/login" component={Login}/>
+          <Route exact path="/callback/:id" component={Callback}/>
+          <Route path="/main_tabs" component={MainTabs}/>
+          <Route exact path="/create_group" component={CreateGroup}/>
+          <Redirect exact from="/" to="/login"/>
         </IonRouterOutlet>
       </IonReactRouter>
     </IonApp>

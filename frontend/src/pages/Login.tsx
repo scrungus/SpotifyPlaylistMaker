@@ -43,26 +43,7 @@ interface UserDetailPageProps extends RouteComponentProps<{
   id: string;
 }> {}
 
-const Login: React.FC<UserDetailPageProps> = ({match}) => {
-  console.log("login route");
-  console.log("id :: "+match.params.id); //will need to check this id, since everything comes through here (e.g. 'groups' page will be read as id=groups)
-  /* This part allows the user to log in if they use a valid username
-     and password. We want probably want to make the request to the
-     auth service from here. */
-
-  sendRequest("GET", "getUserBySpotifyID", { spotifyID: match.params.id }, "currentUser");
-  
-  const cUserPromise = get("currentUser");
-  cUserPromise.then((val) =>{
-  val = JSON.parse(val);
-  if(!val.success){
-    console.log("user doesnt exist");
-  }else{
-    document.cookie = JSON.stringify({ spotifyID: val.data });
-  }
-  });
-
-
+const Login: React.FC = () => {
   //const [userName, setUserName] = useState<string>("");
   //const [password, setPassword] = useState<string>("");
   const user = useContext(UserContext);
@@ -73,13 +54,9 @@ const Login: React.FC<UserDetailPageProps> = ({match}) => {
     const link = get("redirectLink");
     link.then((url) => {
       const redirectWindow = window.open(url)!;
+      window.close();
       // Best I could do, only works after authentication
-      redirectWindow.addEventListener('pageshow', (e) => {
-        if (e) {
-          redirectWindow.close();
-          user.setIsLoggedIn(true);
-        }
-      });
+      
     });
   };
 
