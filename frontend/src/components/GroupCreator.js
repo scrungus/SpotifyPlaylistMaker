@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import {
   IonButton,
   IonCard,
@@ -43,7 +43,7 @@ class GroupCreator extends Component {
     const params = { name: name, creatorID: creatorID };
     sendRequest("POST", "addGroup", params, "addgroup");
   }
-  //
+  
   render() {
     return (<>
       <IonFab vertical="top" horizontal="end" slot="fixed" edge>

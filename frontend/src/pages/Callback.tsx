@@ -1,10 +1,9 @@
-import React, { useContext, useEffect } from 'react';
-import { IonPage, IonButton, IonContent, IonIcon, IonLabel } from '@ionic/react';
+import { useContext, useEffect } from 'react';
+import { IonPage } from '@ionic/react';
 import { RouteComponentProps } from 'react-router-dom';
 import { UserContext } from "../App";
-import { get } from '../hooks/useGroupStorage';
+import { get } from '../hooks/useStorage';
 import { sendRequest } from '../hooks/requestManager';
-import { personCircle } from 'ionicons/icons';
 
 interface UserDetailPageProps extends RouteComponentProps<{
   id: string;
@@ -14,12 +13,11 @@ function setCookie(data: object, maxAge: number) {
   // document.cookie = `data=;expires=${new Date(0)};path=/`;
   var d = new Date();
   d.setTime(d.getTime() + maxAge);
-  var expires = "expires" + d.toUTCString();
-  document.cookie = "data=" + JSON.stringify(data) + ";expires=" + expires + ";path=/";
+  var expires = `expires ${d.toUTCString()}`;
+  document.cookie = `data=${JSON.stringify(data)};expires=${expires};path=/;`
 }
 
 const Callback: React.FC<UserDetailPageProps> = ({match}) => {
-  console.log("Callback");
   const user = useContext(UserContext);
 
   console.log("id :: " + match.params.id); 
@@ -30,15 +28,15 @@ const Callback: React.FC<UserDetailPageProps> = ({match}) => {
 
   useEffect(() => {
     if (match.params.id !== undefined) {
-      sendRequest("GET", "getUserBySpotifyID", { spotifyID: match.params.id }, "currentUser");
+      sendRequest("GET", 8002, "getUserBySpotifyID", { spotifyID: match.params.id }, "currentUser");
   
       const cUserPromise = get("currentUser");
       cUserPromise.then((val) => {
         try {
-          console.log("val: ",val);
+          console.log("val: ", val);
           val = JSON.parse(val);
           if (val.success) {
-            setCookie(val.data, 3600000);
+            setCookie(val.data, 60 * 60 * 1000);
             if (val.data.spotify_id === JSON.parse(document.cookie.split('; ')[0].slice(5)).spotify_id) {
               console.log("user logged in")
               user.setIsLoggedIn(true);
@@ -54,18 +52,7 @@ const Callback: React.FC<UserDetailPageProps> = ({match}) => {
         } 
       });
     }
-  }, []);
-
-
-
-    
-
-
-    // redirectWindow.close();
-    // user.setIsLoggedIn(true);
-  
-
-
+  }, [match.params.id, user]);
 
   return (
     <IonPage>

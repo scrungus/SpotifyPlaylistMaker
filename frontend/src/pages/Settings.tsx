@@ -1,24 +1,13 @@
 import { 
   IonContent, 
-  IonItem, 
   IonHeader, 
   IonList, 
   IonPage, 
   IonTitle, 
-  IonToolbar, 
-  IonIcon, 
-  IonLabel, 
-  IonToggle 
-} from '@ionic/react';
-import ExploreContainer from '../components/ExploreContainer';
-import { moon } from 'ionicons/icons';
+  IonToolbar} from '@ionic/react';
 import './Settings.css';
 
 const Settings: React.FC = () => {
-  const toggleDarkModeHandler = () => {
-    document.body.classList.toggle("dark");
-  }
-
   return (
     <IonPage>
       <IonHeader>
@@ -28,17 +17,7 @@ const Settings: React.FC = () => {
       </IonHeader>
       <IonContent fullscreen>
         <IonList>
-          <IonItem>
-            <IonIcon slot="start" icon={moon}/>
-            <IonLabel>Dark Mode</IonLabel>
-            <IonToggle
-              slot="end"
-              name="darkMode"
-              onIonChange={toggleDarkModeHandler}
-            />
-          </IonItem>
         </IonList>
-        <ExploreContainer name="Tab 3 page" />
       </IonContent>
     </IonPage>
   );
