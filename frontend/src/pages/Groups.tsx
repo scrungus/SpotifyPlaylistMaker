@@ -14,12 +14,12 @@ import {
   IonButton,
   IonButtons
 } from '@ionic/react';
-import { add, close } from 'ionicons/icons';
+import './Groups.css';
 import GroupContainer from '../components/GroupContainer';
-import { get } from '../hooks/useGroupStorage';
-import { sendRequest } from '../hooks/requestManager';
-import './Groups.scss';
 import GroupView from '../components/GroupView';
+import { add, close } from 'ionicons/icons';
+import { get } from '../hooks/useStorage';
+import { sendRequest } from '../hooks/requestManager';
 
 interface Group {
   group_code: string;
@@ -31,7 +31,7 @@ async function getUsersGroups(userId: number | string): Promise<Group[]> {
     spotifyID: userId
   }
 
-  sendRequest("GET", "getUsersGroupsBySpotifyID", params, "groups");
+  sendRequest("GET", 8002, "getUsersGroupsBySpotifyID", params, "groups");
   const groups = get("groups");
   groups.then((val) => {
     if(val !== null && val['success']){

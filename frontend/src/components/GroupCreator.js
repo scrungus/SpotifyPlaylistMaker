@@ -65,12 +65,12 @@ class GroupCreator extends Component {
 
     alert("Create \""+gName+"\".");
     const bodyGroup = { name: gName, creatorID: mems[0] };
-    sendRequest("POST", "addGroup", bodyGroup, "group");
+    sendRequest("POST", 8002, "addGroup", bodyGroup, "group");
 
     mems.forEach(function (mem) {
       alert("Add \""+mem+"\" to "+gName+".");
       const bodyMem = { groupCode: gName, userID: mem };
-      sendRequest("POST", "addGroupMember", bodyMem, "group");
+      sendRequest("POST", 8002, "addGroupMember", bodyMem, "group");
     });
 
     alert("Going back to Groups page.");

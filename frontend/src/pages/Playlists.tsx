@@ -4,7 +4,7 @@ import './Playlists.css';
 import React, { useEffect, useState } from 'react';
 import { contrastOutline, refresh } from 'ionicons/icons';
 import { sendRequest } from '../hooks/requestManager'
-import { get, set } from "../hooks/useGroupStorage";
+import { get, set } from "../hooks/useStorage";
 import { refreshCircle } from 'ionicons/icons';
 
 interface Playlist {
@@ -45,7 +45,7 @@ async function getUsersPlaylists(userId: number | string): Promise<Playlist[]> {
     id: userId
   }
 
-  sendRequest("GET", "getUserPlaylists", params, "playlists")
+  sendRequest("GET", 8002, "getUserPlaylists", params, "playlists")
   const playlists = get("playlists");
   playlists.then((val) => {
     if (val.success) {
@@ -74,7 +74,7 @@ const Playlists: React.FC = () => {
   useEffect(() => {
     console.log("HERE");
     let cancel = false;
-    sendRequest("GET", "getUserPlaylists", { id: currUserID }, "playlists");
+    sendRequest("GET", 8002, "getUserPlaylists", { id: currUserID }, "playlists");
     get("playlists")
       .then((val) => {
         if (cancel) {
@@ -92,7 +92,7 @@ const Playlists: React.FC = () => {
           let resolveCount = 0;
           let failedCount = 0;
           data.forEach((play, index) => {
-            sendRequest("GET", "getplaylistinfo", { id: play.link, tkn: currUserAuth }, `playlistinfo${index}`, 8001);
+            sendRequest("GET", 8001, "getplaylistinfo", { id: play.link, tkn: currUserAuth }, `playlistinfo${index}`);
 
             get(`playlistinfo${index}`)
               .then(val => {

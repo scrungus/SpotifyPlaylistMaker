@@ -1,4 +1,4 @@
-import { set } from './useGroupStorage';
+import { set } from './useStorage';
 
 // Parses parameters for get requests
 function parse(dict: any) {
@@ -21,7 +21,7 @@ export function authRequest() {
 }
 
 // Should be able to handle all database API requests
-export function sendRequest(type: "GET" | "POST", route: string, params_or_body: any, storageKey?: string, port=8002) {
+export function sendRequest(type: "GET" | "POST", port: number, route: string, params_or_body: any, storageKey?: string) {
   /** Don't set storageKey for POST requests */
   const http = new XMLHttpRequest();
   switch (type) {
@@ -43,36 +43,9 @@ export function sendRequest(type: "GET" | "POST", route: string, params_or_body:
   }
 
   http.onreadystatechange = (e) => {
-    //console.log("Received ! : ",http.response);
     if (storageKey) {
       set(storageKey, http.response);
     }
   }
 }
 
-export function fileRequest(type: "GET" | "POST", route: string, params_or_body: any, storageKey?: string) {
-  /** Don't set storageKey for POST requests */
-  const http = new XMLHttpRequest();
-  switch (type) {
-    case "GET": {
-      const params = parse(params_or_body);
-      const url = `http://localhost:5000/${route}?${params}`;
-      http.open(type, url);
-      http.send();
-      break;
-    }
-    case "POST": {
-      const body = JSON.stringify(params_or_body);
-      const url = `http://localhost:5000/${route}`;
-      http.open(type, url);
-      http.send(body);
-      break;
-    }
-  }
-
-  http.onreadystatechange = (e) => {
-    if (storageKey) {
-      set(storageKey, http.response);
-    }
-  }
-}

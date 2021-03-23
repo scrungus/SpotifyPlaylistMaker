@@ -9,8 +9,8 @@ import {
   IonItem,
   IonImg,} from '@ionic/react';
 import { people } from 'ionicons/icons';
-import { get } from '../hooks/useGroupStorage';
-import { fileRequest, sendRequest } from '../hooks/requestManager';
+import { get } from '../hooks/useStorage';
+import { sendRequest } from '../hooks/requestManager';
 
 interface ContainerProps {
   groupCode: string;
@@ -27,7 +27,7 @@ async function getGroupMembers(groupCode: number | string): Promise<Member[]> {
     groupCode: groupCode
   }
 
-  sendRequest("GET", "getGroupMembers", params, "members");
+  sendRequest("GET", 8002, "getGroupMembers", params, "members");
   const members = await get("members");
   return JSON.parse(members)['data']['users'];
 }
@@ -53,7 +53,7 @@ const GroupView: React.FC<ContainerProps> = props => {
       current.file = file;
       reader.onload = e => {
         current.src = e.target.result;
-        fileRequest('POST','',`{${file.name}: ${file}}`,'groupPhoto');
+        sendRequest('POST','',{file.name: file},'groupPhoto', 5000);
       };
       reader.readAsDataURL(file);
     };

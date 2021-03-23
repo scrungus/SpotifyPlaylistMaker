@@ -7,39 +7,17 @@ import {
   IonButton
 } from '@ionic/react';
 import { authRequest } from '../hooks/requestManager';
-import { get } from '../hooks/useGroupStorage';
+import { get } from '../hooks/useStorage';
 import { personCircle } from 'ionicons/icons';
 
 // CSS stuff to centralise the UI.
 import './Login.css';
 
-/* Core CSS required for Ionic components to work properly */
-import '@ionic/react/css/core.css';
-
-// /* Basic CSS for apps built with Ionic */
-import '@ionic/react/css/normalize.css';
-import '@ionic/react/css/structure.css';
-import '@ionic/react/css/typography.css';
-
-/* Optional CSS utils that can be commented out */
-import '@ionic/react/css/padding.css';
-import '@ionic/react/css/float-elements.css';
-import '@ionic/react/css/text-alignment.css';
-import '@ionic/react/css/text-transformation.css';
-import '@ionic/react/css/flex-utils.css';
-import '@ionic/react/css/display.css';
-
 // This lets the login page flag that the user has logged in.
 import { UserContext } from "../App";
 
-/* Theme variables */
-import '../theme/variables.css';
-
 const Login: React.FC = () => {
-  //const [userName, setUserName] = useState<string>("");
-  //const [password, setPassword] = useState<string>("");
   useContext(UserContext);
-
 
   const loginClick = () => {
     authRequest();

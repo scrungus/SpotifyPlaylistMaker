@@ -2,7 +2,7 @@ import { useContext, useEffect } from 'react';
 import { IonPage } from '@ionic/react';
 import { RouteComponentProps } from 'react-router-dom';
 import { UserContext } from "../App";
-import { get } from '../hooks/useGroupStorage';
+import { get } from '../hooks/useStorage';
 import { sendRequest } from '../hooks/requestManager';
 
 interface UserDetailPageProps extends RouteComponentProps<{
@@ -28,7 +28,7 @@ const Callback: React.FC<UserDetailPageProps> = ({match}) => {
 
   useEffect(() => {
     if (match.params.id !== undefined) {
-      sendRequest("GET", "getUserBySpotifyID", { spotifyID: match.params.id }, "currentUser");
+      sendRequest("GET", 8002, "getUserBySpotifyID", { spotifyID: match.params.id }, "currentUser");
   
       const cUserPromise = get("currentUser");
       cUserPromise.then((val) => {
