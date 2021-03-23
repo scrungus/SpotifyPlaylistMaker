@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import {
   IonButton,
   IonCard,
@@ -50,7 +50,7 @@ class GroupCreator extends Component {
   subMember = (num) => {
     this.setState({
       members: this.state.members.filter(function(value, index, arr){
-        return index != num;})
+        return index !== num;})
     });
   }
 
@@ -58,7 +58,7 @@ class GroupCreator extends Component {
   saveGroup = () => {
     const gName = this.state.group;
     const mems = this.state.members;
-    if (mems.length==0) {
+    if (mems.length === 0) {
       alert(gName+" has no members, so it can't be created. Going back to Groups page.");
       return;
     }
@@ -79,8 +79,8 @@ class GroupCreator extends Component {
   render() {
     return (<>
       <IonFab vertical="top" horizontal="end" slot="fixed" edge>
-        <IonFabButton onClick={() => this.saveGroup()} href="./groups">
-          <IonIcon icon={this.state.members.length==0?arrowBack:checkmark}/>
+        <IonFabButton onClick={() => this.saveGroup()} href="/main_tabs">
+          <IonIcon icon={this.state.members.length === 0 ? arrowBack : checkmark}/>
         </IonFabButton>
       </IonFab>
       <IonCard>

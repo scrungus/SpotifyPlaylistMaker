@@ -10,7 +10,6 @@ import {
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import { people, menu, settings } from 'ionicons/icons';
-import CreateGroup from './CreateGroup';
 import Groups from './Groups';
 import Playlists from './Playlists';
 import Settings from './Settings';
@@ -48,9 +47,6 @@ const MainTabs: React.FC = () => (
           <Route exact path="/main_tabs/settings">
             <Settings />
           </Route>
-          {/* <Route exact path="/create_group">
-            <CreateGroup />
-          </Route> */}
           <Route exact path="/main_tabs">
             <Redirect to="/main_tabs/groups"/>
           </Route>
