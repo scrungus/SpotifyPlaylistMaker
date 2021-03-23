@@ -62,7 +62,7 @@ class GroupCreator extends Component {
           <IonButton onClick={() => this.nameGroup()}>Rename group</IonButton>
         </IonItem>
       </IonCard>
-      <IonCard>
+      {/* <IonCard>
         <IonItem>
           <IonTitle>Adding members:</IonTitle>
         </IonItem>
