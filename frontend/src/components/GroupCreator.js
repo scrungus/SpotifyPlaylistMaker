@@ -79,7 +79,7 @@ class GroupCreator extends Component {
   render() {
     return (<>
       <IonFab vertical="top" horizontal="end" slot="fixed" edge>
-        <IonFabButton onClick={() => this.saveGroup()} href="./groups">
+        <IonFabButton onClick={() => this.saveGroup()} href="./main_tabs/groups">
           <IonIcon icon={this.state.members.length==0?arrowBack:checkmark}/>
         </IonFabButton>
       </IonFab>
