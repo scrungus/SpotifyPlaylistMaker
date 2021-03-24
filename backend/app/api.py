@@ -151,7 +151,7 @@ async def generatePlaylist(req: generatePlaylistReq):
     req = httpx.Client().post('http://spotifyplaylistmaker_database_1:8002/addGroupPlaylist', json= {"link": createdPlaylist["id"], "code": req.code })
 
     # return playlist id
-    return createdPlaylist['id']
+    return {"success": True, "playlist_id": createdPlaylist['id']}
 
 # takes in access token and playlist id
 # returns playlist as json
