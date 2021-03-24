@@ -94,7 +94,7 @@ const Playlists: React.FC = () => {
           let data = val.data as Array<Playlist>
           let resolveCount = 0;
           let failedCount = 0;
-          if(!data){
+          if (!data) {
             return;
           }
           getPlaylistHttp = Array(data.length);
@@ -127,10 +127,12 @@ const Playlists: React.FC = () => {
       }
     }
     return () => {
-      getPlaylistHttp.forEach(element => {
-        element.onreadystatechange = () => { };
-      });
-      getUsersHttp.onreadystatechange = () => { };
+      if (getPlaylistHttp) {
+        getPlaylistHttp.forEach(element => {
+          element.onreadystatechange = () => { };
+        });
+      }
+      if (getUsersHttp) { getUsersHttp.onreadystatechange = () => { }; }
     };
   }, [refreshPlaylists]);
 
@@ -148,11 +150,11 @@ const Playlists: React.FC = () => {
       <IonContent fullscreen>
         <IonList>
           {(active) ?
-                <IonItem>
-                  <IonText color="primary">
-                    <h2>Loading...</h2>
-                  </IonText>
-                </IonItem>
+            <IonItem>
+              <IonText color="primary">
+                <h2>Loading...</h2>
+              </IonText>
+            </IonItem>
             :
             playlists.map((play: any, index: number) => {
               return (

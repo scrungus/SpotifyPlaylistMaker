@@ -61,6 +61,7 @@ print("STATE : ",state)
 
 class generatePlaylistReq(BaseModel):
     id: list
+    code: str
  
 #creates a playlist and fills it with some songs
 @app.post("/generatePlaylist", tags=['generatePlaylist'])
@@ -125,8 +126,13 @@ async def generatePlaylist(req: generatePlaylistReq):
         reducedArtists[i] = reducedArtists[i][0]
 
     # get recommendation for group
-    reducedArtists = reducedArtists[:5]
-    tracks = spot.recommendations(seed_artists=reducedArtists, limit=50)
+    reducedArtists = reducedArtists
+    reducedArtistRandom = []
+    for i in range(0, len(reducedArtists), len(tokens)):
+        reducedArtistRandom.append(reducedArtists[i])
+
+    print(reducedArtistRandom)
+    tracks = spot.recommendations(seed_artists=reducedArtistRandom, limit=50)
     for track in tracks['tracks']:
        track_list.append(track['uri'])
 
@@ -136,6 +142,8 @@ async def generatePlaylist(req: generatePlaylistReq):
         if grp_member != 0:
             sp[grp_member].user_playlist_follow_playlist(usernames[grp_member], playlist_id=createdPlaylist['id'])
     a = spotipy.Spotify(tokens[0], auth_manager=SpotifyOAuth(client_id=clientID, client_secret=clientSecret, scope=scopes))
+
+    req = httpx.Client().post('http://spotifyplaylistmaker_database_1:8002/addGroupPlaylist', json= {"link": createdPlaylist["id"], "code": req.code })
 
     # return playlist id
     return createdPlaylist['id']

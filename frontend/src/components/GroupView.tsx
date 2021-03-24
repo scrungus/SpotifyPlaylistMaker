@@ -75,7 +75,7 @@ const GroupView: React.FC<ContainerProps> = props => {
 
 
 
-    sendRequest("POST", 8001, "generatePlaylist", { id: toSend });
+    sendRequest("POST", 8001, "generatePlaylist", { id: toSend, code: props.groupCode });
   }
 
   useEffect(() => {
