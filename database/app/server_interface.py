@@ -273,7 +273,7 @@ class DatabaseConnector:
         userID = userData["data"]["id"]
 
         sql = "INSERT INTO group_members (user_id) VALUES (%(user_id)s)"
-        val = {"group_id": groupID, "user_id": userID}
+        val = {"user_id": userID}
         
         self.connection.cursor().execute(
             sql, val
