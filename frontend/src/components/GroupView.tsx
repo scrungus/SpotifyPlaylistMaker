@@ -137,11 +137,11 @@ const GroupView: React.FC<ContainerProps> = props => {
           </IonItemOptions>
       </IonItemSliding>
       ))}
-      <IonTitle>Playlists Name</IonTitle>
+      <IonTitle>Name Playlist</IonTitle>
       <IonItem>
-        <IonInput onIonChange={e => {name = e.detail.value || ""}}></IonInput>
+        <IonInput id="namePlaylist" type="text" placeholder="Name Your Playlist" onIonChange={e => {name = e.detail.value || ""}}></IonInput>
+        <IonButton onClick={generatePlaylist}>Generate playlist</IonButton>
       </IonItem>
-      <IonButton onClick={generatePlaylist}>Generate playlist</IonButton>
     </IonContent>
   );
 };
