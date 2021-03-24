@@ -22,29 +22,10 @@ export const PlaylistBox: React.FC<ContainerProps> = props => {
         onDidDismiss={() => setShowActionSheet(false)}
         cssClass='my-custom-class'
         buttons={[{
-          text: 'Delete',
-          role: 'destructive',
-          icon: trash,
-          handler: () => {
-            console.log('Delete clicked');
-          }
-        }, {
-          text: 'Share',
-          icon: share,
-          handler: () => {
-            console.log('Share clicked');
-          }
-        }, {
           text: 'Play',
           icon: caretForwardCircle,
           handler: () => {
             window.open(props.link);
-          }
-        }, {
-          text: 'Favorite',
-          icon: heart,
-          handler: () => {
-            console.log('Favorite clicked');
           }
         }, {
           text: 'Cancel',

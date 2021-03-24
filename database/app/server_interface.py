@@ -375,3 +375,58 @@ class DatabaseConnector:
             })
 
         return {"success": True, "data": out, "error": None}
+
+
+
+    def deleteUser(self, spotifyID: str):
+        res = self.getUser(spotifyID=spotifyID)
+        if(res["success"] == False):
+            return res
+
+        cursor = self.connection.cursor()
+        sql = """
+        DELETE FROM
+        group_members
+        WHERE
+        user_id = %(user_id)s
+        """
+        cursor.execute(sql, { "user_id": res["data"]["id"] })
+
+        sql = """
+        DELETE FROM
+        users
+        WHERE
+        user_id = %(user_id)s
+        """
+        cursor.execute(sql, { "user_id": res["data"]["id"] })
+
+        self.connection.commit()
+        return { "success": True }
+             
+    def leaveGroup(self, spotifyID, code):
+        res = self.getUser(spotifyID=spotifyID)
+        if(res["success"] == False):
+            return res
+
+        groupID = None
+
+        try:
+            groupID = hashBack(code)
+        except:
+            return {"success": False}
+
+        cursor = self.connection.cursor()
+        sql = """
+        DELETE FROM
+        group_members
+        WHERE
+        user_id = %(user_id)s
+        AND group_id = %(group_id)s
+        """
+            
+        cursor.execute(sql, { "user_id": res["data"]["id"], "group_id": groupID })
+        self.connection.commit()
+
+        return {"success": True}
+            
+

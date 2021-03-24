@@ -43,6 +43,8 @@ let name = "";
 }
  */
 
+
+
 // Component displayed in modal after group is tapped in Groups tab
 const GroupView: React.FC<ContainerProps> = props => {
   /* const uploadedImage = useRef<typeof IonImg>(null);
@@ -68,6 +70,19 @@ const GroupView: React.FC<ContainerProps> = props => {
 
   const [members, setMembers] = useState<Member[]>([]);
   const [genSuccess, setGenSuccess] = useState<number>(0);
+  const currUser = JSON.parse(document.cookie.split('; ')[0].slice(5))
+
+
+  const leaveGroup = () => {
+    let http = sendRequestAsync("POST", 8002, "leaveGroup", { spotifyID: currUser.spotify_id, code: props.groupCode }, "");
+    http.onreadystatechange = e =>{
+      if(http.readyState == 4){
+        window.location.href = "/main_tabs/groups";
+      }
+    }
+  }
+
+
 
   const generatePlaylist = () => {
     let toSend: string[] = [];
@@ -77,7 +92,7 @@ const GroupView: React.FC<ContainerProps> = props => {
 
 
 
-    let http = sendRequestAsync("POST", 8001, "generatePlaylist", { id: toSend, code: props.groupCode, name });
+    let http = sendRequestAsync("POST", 8001, "generatePlaylist", { id: toSend, code: props.groupCode, name: name });
 
     http.onreadystatechange = e =>{
       if(http.readyState != 4){
@@ -175,6 +190,9 @@ const GroupView: React.FC<ContainerProps> = props => {
               </IonItem>)
               : null
           }
+      <IonItem>
+        <IonButton onClick={leaveGroup}>Leave Group</IonButton>
+      </IonItem>
     </IonContent>
   );
 };

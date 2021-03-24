@@ -149,5 +149,20 @@ async def getUsersGroupsByUsername(username: str):
 @app.get("/getUsersGroupsBySpotifyID", tags=["getUserGroupsBySpotifyID"])
 async def getUsersGroupsBySpotifyID(spotifyID: str):
     return db.getUsersGroups(spotify_id=spotifyID)
+
+class deleteAccountReq(BaseModel):
+    spotifyID: str
+
+@app.post("/deleteAccount", tags=["/deleteAccount"])
+async def deleteAccount(req: deleteAccountReq):
+    return db.deleteUser(req.spotifyID)
+
+class leaveGroupReq(BaseModel):
+    spotifyID: str
+    code: str
+
+@app.post("/leaveGroup", tags=["/leaveGroup"])
+async def leaveGroup(req: leaveGroupReq):
+    return db.leaveGroup(req.spotifyID, req.code)
     
     

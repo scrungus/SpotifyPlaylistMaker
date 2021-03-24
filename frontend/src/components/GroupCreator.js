@@ -16,26 +16,27 @@ import { arrowBack, checkmark, people } from 'ionicons/icons';
 import { sendRequestAsync } from '../hooks/requestManager';
 import './GroupCreator.css';
 
-class GroupCreator extends Component {
+let name = ""
 
-  state = {
-    name: "",
+class GroupCreator extends Component {
+  constructor(props){
+    super(props);
+    this.state = { displayName: "", createGroup: 0 };
   }
 
+
   nameGroup = () => {
-    const name = document.getElementById("namegroup").value;
+    name = document.getElementById("namegroup").value;
     if (name === "") {
       alert("Enter a name.");
       return;
     }
-    this.setState({
-      name: name,
-    });
+    this.setState({displayName: name});
     document.getElementById("namegroup").value = "";
+    this.saveGroup();
   }
 
   saveGroup = () => {
-    const name = this.state.name;
     if (name=="") {
       return;
     }
@@ -47,15 +48,24 @@ class GroupCreator extends Component {
       if(http.readyState != 4){
         return;
       }
-      window.location.href = "/main_tabs/groups"
+      try{
+        let res = JSON.parse(http.response);
+        if(res.success){
+          this.setState({createGroup: 2});
+        } else {
+          this.setState({createGroup: 1});
+        }
+      }catch{
+        this.setState({createGroup: 1});
+      }
     }
   }
   
   render() {
     return (<>
       <IonFab vertical="top" horizontal="end" slot="fixed" edge>
-        <IonFabButton onClick={() => this.saveGroup()} href="/main_tabs/groups">
-          <IonIcon icon={this.state.name==""?arrowBack:checkmark}/>
+        <IonFabButton href="/main_tabs/groups">
+          <IonIcon icon={this.state.displayName==""?arrowBack:checkmark}/>
         </IonFabButton>
       </IonFab>
       <IonCard>
@@ -63,11 +73,21 @@ class GroupCreator extends Component {
           <IonThumbnail slot="start">
             <IonImg src={people}></IonImg>
           </IonThumbnail>
-          <IonTitle>{this.state.name==""?"Create Group":this.state.name}</IonTitle>
+          <IonTitle>{this.state.displayName==""?"Create Group":this.state.displayName}</IonTitle>
         </IonItem>
         <IonItem>
           <IonInput id="namegroup" type="text" placeholder="Name Your Group"></IonInput>
           <IonButton onClick={() => this.nameGroup()}>Create Group</IonButton>
+          {(this.state.createGroup == 2) ?
+            (<IonItem>
+              <IonText color="success">Group Created!</IonText>
+            </IonItem>)
+            : (this.state.createGroup == 1)?
+            (<IonItem>
+              <IonText color="danger">Failed to create group</IonText>
+            </IonItem>)
+            : null
+          }
         </IonItem>
         {this.state.name=="" && (
           <IonItem >
