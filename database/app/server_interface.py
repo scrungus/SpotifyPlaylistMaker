@@ -191,7 +191,7 @@ class DatabaseConnector:
                 (playlists.group_id = user_groups.group_id
                     OR playlists.spotify_id = users.spotify_id
                 ) 
-                WHERE users.spotify_id = "samg_27"
+                WHERE users.spotify_id =  %(spotify_id)s
             """
             val = {"spotify_id": spotifyID} 
         else:
