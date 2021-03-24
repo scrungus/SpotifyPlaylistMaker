@@ -94,7 +94,9 @@ const Playlists: React.FC = () => {
           let data = val.data as Array<Playlist>
           let resolveCount = 0;
           let failedCount = 0;
-
+          if(!data){
+            return;
+          }
           getPlaylistHttp = Array(data.length);
           data.forEach((play, index) => {
             getPlaylistHttp[index] = sendRequestAsync("GET", 8001, "getplaylistinfo", { id: play.link, tkn: currUserAuth }, `playlistinfo${index}`);

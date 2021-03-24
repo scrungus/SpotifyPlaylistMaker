@@ -22,7 +22,7 @@ os.environ['SPOTIPY_CLIENT_SECRET'] = '3ec8cd1f469647afa658904334e760ce'
 redirectURI = 'http://localhost:8001/'
 os.environ['SPOTIPY_REDIRECT_URI'] = 'http://localhost:8001/'
 
-scopes = 'user-read-private user-read-email user-library-modify user-library-read user-top-read playlist-read-collaborative playlist-modify-private playlist-modify-public playlist-read-private user-follow-read user-read-recently-played'
+scopes = 'user-follow-modify user-read-private user-read-email user-library-modify user-library-read user-top-read playlist-read-collaborative playlist-modify-private playlist-modify-public playlist-read-private user-follow-read user-read-recently-played'
 
 state = str(uuid.uuid4()).replace("-","")[0:STATE_LENGTH]
 client = httpx.AsyncClient()
@@ -102,7 +102,7 @@ async def generatePlaylist(id : List[str] = Query(None)):
 
     # get 5 most common artists from each user
     for grp_member in range(len(tokens)):
-        createdPlaylist = sp[grp_member].user_playlist_create(usernames[grp_member], playlistNames[grp_member], public=True, collaborative=False, description=playlistDescription)
+        createdPlaylist = sp[grp_member].user_playlist_create(usernames[grp_member], playlistNames[grp_member], public=False, collaborative=True, description=playlistDescription)
         allArtists = []
         playlists = sp[grp_member].user_playlists(usernames[grp_member])
         for playlist in playlists['items']:
