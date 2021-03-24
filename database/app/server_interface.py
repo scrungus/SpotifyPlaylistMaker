@@ -171,9 +171,20 @@ class DatabaseConnector:
         return {"success": True, "error": ""}
 
     def getPlaylists(self, spotifyID=None, groupID=None):
+
+        
+
         if(spotifyID != None):
-            sql = "SELECT * FROM playlists WHERE spotify_id = %(spotifyID)s"
-            val = {"spotifyID": spotifyID}
+            sql = """
+            SELECT playlists.*
+            FROM playlists 
+            INNER JOIN (
+            users INNER JOIN user_groups
+            ) 
+            ON playlists.group_id = user_groups.group_id
+            WHERE users.spotify_id = %(spotify_id)s
+            """
+            val = {"spotify_id": spotifyID} 
         else:
             sql = "SELECT * FROM playlists WHERE group_id = %(group_id)s"
             val = {"group_id": hashBack(groupID)}

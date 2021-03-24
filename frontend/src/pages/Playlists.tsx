@@ -60,16 +60,13 @@ const Playlists: React.FC = () => {
   let responseBuffer: Array<Object>;
 
   let cancelReq = () => {
-    if (getUsersHttp) {
-      getUsersHttp.abort();
+    if (getPlaylistHttp) {
+      getPlaylistHttp.forEach(element => {
+        element.onreadystatechange = () => { };
+      });
     }
-
-    getPlaylistHttp.forEach(val => {
-      if (val) {
-        val.abort();
-      }
-    });
-  }
+    if (getUsersHttp) { getUsersHttp.onreadystatechange = () => { }; }
+  };
 
   useEffect(() => {
     if (active == true) {
@@ -94,7 +91,15 @@ const Playlists: React.FC = () => {
           let data = val.data as Array<Playlist>
           let resolveCount = 0;
           let failedCount = 0;
+          console.log("active", data);
           if (!data) {
+            active = false;
+            setPlaylists([]);
+            return;
+          }
+          if(data.length == 0){
+            active = false;
+            setPlaylists([]);
             return;
           }
           getPlaylistHttp = Array(data.length);
@@ -126,14 +131,7 @@ const Playlists: React.FC = () => {
         }
       }
     }
-    return () => {
-      if (getPlaylistHttp) {
-        getPlaylistHttp.forEach(element => {
-          element.onreadystatechange = () => { };
-        });
-      }
-      if (getUsersHttp) { getUsersHttp.onreadystatechange = () => { }; }
-    };
+    return cancelReq;
   }, [refreshPlaylists]);
 
   //let playlists = [{name: "p1", link: "http://www.google.com", icon: null}, {name: "p2", link: "http://www.spotify.com", icon: null}];
