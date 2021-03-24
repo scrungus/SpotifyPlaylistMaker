@@ -13,7 +13,7 @@ import {
   IonTitle,
 } from '@ionic/react';
 import { arrowBack, checkmark, people } from 'ionicons/icons';
-import { sendRequest } from '../hooks/requestManager';
+import { sendRequestAsync } from '../hooks/requestManager';
 import './GroupCreator.css';
 
 class GroupCreator extends Component {
@@ -40,14 +40,21 @@ class GroupCreator extends Component {
       return;
     }
     const creatorID = JSON.parse(document.cookie.split('; ')[0].slice(5)).spotify_id;
-    const params = { name: name, creatorID: creatorID };
-    sendRequest("POST", "addGroup", params, "addgroup");
+    const params = { creatorID: creatorID, name: name };
+    console.log(params);
+    let http = sendRequestAsync("POST", 8002, "addGroup", params, "addgroup");
+    http.onreadystatechange = e =>{
+      if(e != 4){
+        return;
+      }
+      window.location.href="/main_tabs/groups"
+    }
   }
   
   render() {
     return (<>
       <IonFab vertical="top" horizontal="end" slot="fixed" edge>
-        <IonFabButton onClick={() => this.saveGroup()} href="./main_tabs/groups">
+        <IonFabButton onClick={() => this.saveGroup()}>
           <IonIcon icon={this.state.name==""?arrowBack:checkmark}/>
         </IonFabButton>
       </IonFab>

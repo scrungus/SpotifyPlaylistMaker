@@ -215,7 +215,7 @@ class DatabaseConnector:
         self.connection.commit()
 
         cursor = self.connection.cursor()
-        cursor.execute("SELECT group_id FROM user_groups WHERE creator=%(creatorID)s", {"creatorID": creatorID})
+        cursor.execute("SELECT group_id FROM user_groups WHERE creator=%(creatorID)s AND group_name=%(name)s", {"creatorID": creatorID, "name": name})
         self.connection.commit()
         res = cursor.fetchall()
 
