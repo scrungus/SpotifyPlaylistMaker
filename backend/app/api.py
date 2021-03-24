@@ -102,7 +102,7 @@ async def generatePlaylist(id : List[str] = Query(None)):
 
     # get 5 most common artists from each user
     for grp_member in range(len(tokens)):
-        createdPlaylist = sp[grp_member].user_playlist_create(usernames[grp_member], playlistNames[grp_member], public=True, collaborative=True, description=playlistDescription)
+        createdPlaylist = sp[grp_member].user_playlist_create(usernames[grp_member], playlistNames[grp_member], public=True, collaborative=False, description=playlistDescription)
         allArtists = []
         playlists = sp[grp_member].user_playlists(usernames[grp_member])
         for playlist in playlists['items']:
