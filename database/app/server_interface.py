@@ -341,35 +341,27 @@ class DatabaseConnector:
         user = res["data"]
         print("user : ",user)
         sql = """
-            SELECT user_groups.group_id, user_groups.group_name 
-            FROM user_groups 
-            INNER JOIN group_members 
-            ON user_groups.group_id = group_members.group_id 
-            WHERE user_groups.creator=%(user_id)s
+            SELECT user_groups.*
+            FROM user_groups
+            INNER JOIN (
+                users INNER JOIN group_members ON users.user_id = group_members.user_id
+            )
+            ON group_members.group_id = user_groups.group_id
+            WHERE users.spotify_id = %(spotify_id)s
             
             """
 
-        sql = """
-            SELECT user_groups.group_id, user_groups.group_name 
-            FROM user_groups 
-            WHERE user_groups.creator=%(user_id)s
-        """
-        if id:
-            val = {"user_id": user["id"]}
-
-        elif spotify_id:
-            print("passing spotify id")
-            val = {"user_id": user["spotify_id"]}
+        
         
         cursor = self.connection.cursor()
-        cursor.execute(sql, val)
+        cursor.execute(sql, {"spotify_id": res["data"]["spotify_id"]})
         res = cursor.fetchall()
         out = []
         print("res :",res)
         for r in res:
             out.append({
                 "group_code": hashForward(r[0]),
-                "group_name": r[1]
+                "group_name": r[2]
             })
 
         return {"success": True, "data": out, "error": None}
