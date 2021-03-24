@@ -13,7 +13,6 @@ import {
   IonModal,
   IonButton,
   IonButtons,
-  IonInput
 } from '@ionic/react';
 import './Groups.css';
 import GroupContainer from '../components/GroupContainer';

@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { 
   IonItemSliding,
   IonItemOptions,
@@ -11,7 +11,6 @@ import {
   IonText,
   IonGrid,
   IonCol,
-  IonRouterContext,
   IonRow,
   IonButton,} from '@ionic/react';
 import { people } from 'ionicons/icons';
@@ -43,7 +42,7 @@ async function getGroupMembers(groupCode: number | string): Promise<Member[]> {
 }
  */
 
- // Component displayed in modal after group is tapped in Groups tab
+// Component displayed in modal after group is tapped in Groups tab
 const GroupView: React.FC<ContainerProps> = props => {
   /* const uploadedImage = useRef<typeof IonImg>(null);
   const imageUploader = useRef<HTMLInputElement>(null); */
@@ -67,6 +66,11 @@ const GroupView: React.FC<ContainerProps> = props => {
   
 
   const [members, setMembers] = useState<Member[]>([]);
+
+  const generatePlaylist = () => {
+    const currUserID = JSON.parse(document.cookie.split('; ')[0].slice(5)).spotify_id;
+    sendRequest("GET", 8001, "generatePlaylist", { id: currUserID });
+  }
 
   useEffect(() => {
     const members_promise = getGroupMembers(props.groupCode);
@@ -112,6 +116,7 @@ const GroupView: React.FC<ContainerProps> = props => {
           </IonItemOptions>
       </IonItemSliding>
       ))}
+      <IonButton onClick={generatePlaylist}>Generate playlist</IonButton>
     </IonContent>
   );
 };
