@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   IonItemSliding,
   IonItemOptions,
@@ -12,10 +12,11 @@ import {
   IonGrid,
   IonCol,
   IonRow,
-  IonButton,} from '@ionic/react';
+  IonButton,
+  IonInput,} from '@ionic/react';
 import { people } from 'ionicons/icons';
 import { get } from '../hooks/useStorage';
-import { sendRequest } from '../hooks/requestManager';
+import { sendRequestAsync } from '../hooks/requestManager';
 
 interface ContainerProps {
   groupCode: string;
@@ -27,15 +28,15 @@ interface Member {
   username: string;
 }
 
-async function getGroupMembers(groupCode: number | string): Promise<Member[]> {
+function getGroupMembers(groupCode: number | string): XMLHttpRequest {
   const params = {
     groupCode: groupCode
   }
 
-  sendRequest("GET", 8002, "getGroupMembers", params, "members");
-  const members = await get("members");
-  return JSON.parse(members)['data']['users'];
+  return sendRequestAsync("GET", 8002, "getGroupMembers", params, "members");
 }
+
+let name = "";
 
 /* async function getGroupPhoto(){
   return people;
@@ -75,14 +76,28 @@ const GroupView: React.FC<ContainerProps> = props => {
 
 
 
-    sendRequest("POST", 8001, "generatePlaylist", { id: toSend, code: props.groupCode });
+    sendRequestAsync("POST", 8001, "generatePlaylist", { id: toSend, code: props.groupCode, name });
   }
 
   useEffect(() => {
-    const members_promise = getGroupMembers(props.groupCode);
-    members_promise.then((values) => {
-      setMembers(values);
-    });
+    let http = getGroupMembers(props.groupCode);
+    http.onreadystatechange = e => {
+      if(http.readyState != 4){
+        return;
+      }
+      
+
+      let val;
+      try{
+        val = http.response;
+      } catch {
+        console.log("couldnt parse");
+        return;
+      }
+      const members = val;
+      setMembers(JSON.parse(members)['data']['users']);
+     
+    }
   }, [props.groupCode])
 
   return (
@@ -122,6 +137,10 @@ const GroupView: React.FC<ContainerProps> = props => {
           </IonItemOptions>
       </IonItemSliding>
       ))}
+      <IonTitle>Playlists Name</IonTitle>
+      <IonItem>
+        <IonInput onIonChange={e => {name = e.detail.value || ""}}></IonInput>
+      </IonItem>
       <IonButton onClick={generatePlaylist}>Generate playlist</IonButton>
     </IonContent>
   );

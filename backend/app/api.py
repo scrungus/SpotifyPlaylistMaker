@@ -62,6 +62,7 @@ print("STATE : ",state)
 class generatePlaylistReq(BaseModel):
     id: list
     code: str
+    name: str
  
 #creates a playlist and fills it with some songs
 @app.post("/generatePlaylist", tags=['generatePlaylist'])
@@ -75,7 +76,6 @@ async def generatePlaylist(req: generatePlaylistReq):
         with httpx.Client() as client:
             user = client.get('http://spotifyplaylistmaker_database_1:8002/getUserBySpotifyID'+'?spotifyID='+idx).text
         user = json.loads(user)
-        print(user)
         usernames.append(user['data']['spotify_id'])
         tokens.append(user['data']['spotify_auth'])
 
@@ -106,8 +106,13 @@ async def generatePlaylist(req: generatePlaylistReq):
             playlistNames.append('Group Playlist ' + str(latestPlaylist + 1))
 
     # get 5 most common artists from each user
+
+    if(req.name == ""):
+        name = playlistNames[0]
+    else:
+        name = req.name
     
-    createdPlaylist = sp[0].user_playlist_create(usernames[0], playlistNames[0], public=False, collaborative=True, description=playlistDescription)
+    createdPlaylist = sp[0].user_playlist_create(usernames[0], name, public=False, collaborative=True, description=playlistDescription)
     for grp_member in range(len(tokens)):
         allArtists = []
         playlists = sp[grp_member].user_playlists(usernames[grp_member])
@@ -117,7 +122,7 @@ async def generatePlaylist(req: generatePlaylistReq):
                 tracks = results['tracks']
                 for item in tracks['items']:
                     track = item['track']
-                    if(track['artists'][0]['uri'] != None):
+                    if(track != None and track['artists'][0]['uri'] != None):
                         allArtists.append(track['artists'][0]['uri'])
                 
         reducedArtists += Counter(allArtists).most_common(5)
