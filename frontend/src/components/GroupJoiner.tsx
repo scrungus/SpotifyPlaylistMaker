@@ -14,8 +14,8 @@ import {
   IonThumbnail,
   IonCard,} from '@ionic/react';
 import { people } from 'ionicons/icons';
-import { get } from '../hooks/useGroupStorage';
-import { fileRequest, sendRequest } from '../hooks/requestManager';
+import { get } from '../hooks/useStorage';
+import { sendRequest } from '../hooks/requestManager';
 
 interface ContainerProps {
   groupCode: string;
@@ -30,7 +30,7 @@ interface Member {
 const joinGroup = (groupCode: string) => {
   const userID = JSON.parse(document.cookie.split('; ')[0].slice(5)).spotify_id;
   const params = { groupCode: groupCode, spotifyID: userID };
-  sendRequest("POST", "addGroupMember", params, "addmember");
+  sendRequest("POST", 8002, "addGroupMember", params, "addmember");
 }
 
  // Component displayed in modal after group is tapped in Groups tab

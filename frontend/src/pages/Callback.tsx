@@ -3,11 +3,11 @@ import { IonPage } from '@ionic/react';
 import { RouteComponentProps } from 'react-router-dom';
 import { UserContext } from "../App";
 import { get } from '../hooks/useStorage';
-import { sendRequest } from '../hooks/requestManager';
+import { sendRequestAsync } from '../hooks/requestManager';
 
 interface UserDetailPageProps extends RouteComponentProps<{
   id: string;
-}> {}
+}> { }
 
 function setCookie(data: object, maxAge: number) {
   // document.cookie = `data=;expires=${new Date(0)};path=/`;
@@ -17,10 +17,10 @@ function setCookie(data: object, maxAge: number) {
   document.cookie = `data=${JSON.stringify(data)};expires=${expires};path=/;`
 }
 
-const Callback: React.FC<UserDetailPageProps> = ({match}) => {
+const Callback: React.FC<UserDetailPageProps> = ({ match }) => {
   const user = useContext(UserContext);
 
-  console.log("id :: " + match.params.id); 
+  console.log("id :: " + match.params.id);
   //will need to check this id, since everything comes through here (e.g. 'groups' page will be read as id=groups)
   /* This part allows the user to log in if they use a valid username
      and password. We want probably want to make the request to the
@@ -28,10 +28,13 @@ const Callback: React.FC<UserDetailPageProps> = ({match}) => {
 
   useEffect(() => {
     if (match.params.id !== undefined) {
-      sendRequest("GET", 8002, "getUserBySpotifyID", { spotifyID: match.params.id }, "currentUser");
-  
-      const cUserPromise = get("currentUser");
-      cUserPromise.then((val) => {
+      let http = sendRequestAsync("GET", 8002, "getUserBySpotifyID", { spotifyID: match.params.id }, "currentUser");
+
+      http.onreadystatechange = (e) => {
+        if(http.readyState != 4){
+          return;
+        }
+        let val = http.response;
         try {
           console.log("val: ", val);
           val = JSON.parse(val);
@@ -46,13 +49,14 @@ const Callback: React.FC<UserDetailPageProps> = ({match}) => {
             console.log("user doesnt exist");
           }
         }
-        catch(e) {
+        catch (e) {
           console.error(e);
           console.log("invalid user data");
-        } 
-      });
+        }
+      }
     }
   }, [match.params.id, user]);
+
 
   return (
     <IonPage>
