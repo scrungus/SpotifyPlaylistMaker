@@ -44,10 +44,10 @@ class GroupCreator extends Component {
     console.log(params);
     let http = sendRequestAsync("POST", 8002, "addGroup", params, "addgroup");
     http.onreadystatechange = e =>{
-      if(e != 4){
+      if(http.readyState != 4){
         return;
       }
-      window.location.href="/main_tabs/groups"
+      window.location.href = "/main_tabs/groups"
     }
   }
   
