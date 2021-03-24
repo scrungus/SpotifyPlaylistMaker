@@ -15,7 +15,7 @@ STATE_LENGTH=16
 clientID = 'cfbac69fc1fb41f28dd001bf8f2114b9'
 clientSecret = '3ec8cd1f469647afa658904334e760ce'
 redirect_uri = 'http://localhost:8000/api/callback/'
-scopes = 'user-read-private user-read-email user-library-modify user-library-read user-top-read playlist-modify-private playlist-read-private user-follow-read user-read-recently-played'
+scopes = 'user-read-private user-read-email user-library-modify user-library-read user-top-read playlist-read-collaborative playlist-modify-private playlist-modify-public playlist-read-private user-follow-read user-read-recently-played'
 state = str(uuid.uuid4()).replace("-","")[0:STATE_LENGTH]
 
 app = FastAPI()
@@ -80,7 +80,7 @@ async def callback(request : Request):
         results = sp.current_user()
         results.update({'access_token': access_token})
 
-        # httpx.post('http://spotifyplaylistmaker_database_1:8002/addUser',json=results)   
+        # httpx.post('http://spotifyplaylistmaker_database_1:8002/addUser',json=results)
         async with httpx.AsyncClient() as client:
             r = client.build_request('POST','http://spotifyplaylistmaker_database_1:8002/addUser', json=results)
             await client.send(r,timeout=5)
