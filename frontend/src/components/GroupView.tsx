@@ -23,7 +23,7 @@ interface ContainerProps {
 }
 
 interface Member {
-  id: number;
+  id: string;
   username: string;
 }
 
@@ -68,8 +68,12 @@ const GroupView: React.FC<ContainerProps> = props => {
   const [members, setMembers] = useState<Member[]>([]);
 
   const generatePlaylist = () => {
-    const currUserID = JSON.parse(document.cookie.split('; ')[0].slice(5)).spotify_id;
-    sendRequest("GET", 8001, "generatePlaylist", { id: currUserID });
+    let toSend: string[] = [];
+    members.forEach(member => {
+      toSend.push(member.id);
+    });
+
+    sendRequest("GET", 8001, "generatePlaylist", toSend);
   }
 
   useEffect(() => {

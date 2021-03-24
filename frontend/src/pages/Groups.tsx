@@ -60,7 +60,6 @@ const Groups: React.FC = () => {
       console.log("Groups : ",values);
       if (values !== null) {
         setGroups(values);
-        
       }
     }
     );

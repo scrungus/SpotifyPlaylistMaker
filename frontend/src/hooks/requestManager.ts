@@ -70,3 +70,17 @@ export function sendRequestAsync(type: "GET" | "POST", port: number, route: stri
     }
   }
 }
+
+export function getGeneratedPlaylist(members: string[]) {
+  const http = new XMLHttpRequest();
+
+  let params: string = "";
+  members.forEach(member => {
+    params += `id=${member}&`;
+  });
+
+  const url = `http://localhost:8001/generatePlaylist?${params}`;
+  http.open("GET", url);
+  http.send();
+  return http;
+}
