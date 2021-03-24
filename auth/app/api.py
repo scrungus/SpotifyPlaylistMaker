@@ -15,7 +15,7 @@ STATE_LENGTH=16
 clientID = 'cfbac69fc1fb41f28dd001bf8f2114b9'
 clientSecret = '3ec8cd1f469647afa658904334e760ce'
 redirect_uri = 'http://localhost:8000/api/callback/'
-scopes = 'user-read-private user-read-email user-library-modify user-library-read'
+scopes = 'user-read-private user-read-email user-library-modify user-library-read user-top-read playlist-modify-private playlist-read-private user-follow-read user-read-recently-played'
 state = str(uuid.uuid4()).replace("-","")[0:STATE_LENGTH]
 
 app = FastAPI()
