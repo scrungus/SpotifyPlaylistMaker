@@ -10,6 +10,7 @@ import {
   IonThumbnail,
   IonCard,} from '@ionic/react';
 import { people } from 'ionicons/icons';
+import { get } from '../hooks/useStorage';
 import { sendRequest } from '../hooks/requestManager';
 
 const joinGroup = (groupCode: string) => {

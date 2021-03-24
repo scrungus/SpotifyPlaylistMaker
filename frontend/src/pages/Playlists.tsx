@@ -1,11 +1,11 @@
-import { IonContent, IonFab, IonFabButton, IonHeader, IonIcon, IonItem, IonList, IonPage, IonTitle, IonToolbar } from '@ionic/react';
+import { IonContent, IonFab, IonFabButton, IonHeader, IonIcon, IonItem, IonList, IonPage, IonText, IonTitle, IonToolbar } from '@ionic/react';
 import PlaylistBox from '../components/PlaylistContainer';
 import './Playlists.css';
 import React, { useEffect, useState } from 'react';
 import { contrastOutline, refresh } from 'ionicons/icons';
-import { sendRequest } from '../hooks/requestManager'
+import { sendRequestAsync } from '../hooks/requestManager'
 import { get, set } from "../hooks/useStorage";
-import { refreshCircle } from 'ionicons/icons';
+import { refreshCircle, cloudDownloadSharp } from 'ionicons/icons';
 
 interface Playlist {
   name: string
@@ -40,21 +40,7 @@ type PlaylistsState = {
   userID: number;
 }
 
-async function getUsersPlaylists(userId: number | string): Promise<Playlist[]> {
-  const params = {
-    id: userId
-  }
-
-  sendRequest("GET", 8002, "getUserPlaylists", params, "playlists")
-  const playlists = get("playlists");
-  playlists.then((val) => {
-    if (val.success) {
-      return JSON.parse(val).data;
-    }
-  })
-  return [];
-}
-
+let active = false;
 
 const Playlists: React.FC = () => {
 
@@ -69,18 +55,35 @@ const Playlists: React.FC = () => {
   const currUser = JSON.parse(document.cookie.split('; ')[0].slice(5))
   const currUserID = currUser.spotify_id;
   const currUserAuth = currUser.spotify_auth;
-  console.log(currUserID);
+  let getUsersHttp: XMLHttpRequest;
+  let getPlaylistHttp: Array<XMLHttpRequest>;
+  let responseBuffer: Array<Object>;
+
+  let cancelReq = () => {
+    if (getUsersHttp) {
+      getUsersHttp.abort();
+    }
+
+    getPlaylistHttp.forEach(val => {
+      if (val) {
+        val.abort();
+      }
+    });
+  }
 
   useEffect(() => {
-    console.log("HERE");
-    let cancel = false;
-    sendRequest("GET", 8002, "getUserPlaylists", { id: currUserID }, "playlists");
-    get("playlists")
-      .then((val) => {
-        if (cancel) {
-          return;
-        }
-        console.log(val);
+    if (active == true) {
+      cancelReq();
+      console.log("cancelled requests");
+    }
+
+    active = true;
+
+    getUsersHttp = sendRequestAsync("GET", 8002, "getUserPlaylists", { id: currUserID }, "playlists");
+    getUsersHttp.onreadystatechange = (e) => {
+      if (getUsersHttp.readyState == 4) {
+        let val = getUsersHttp.response;
+
         if (val && val != "") {
           val = JSON.parse(val);
         } else {
@@ -91,37 +94,42 @@ const Playlists: React.FC = () => {
           let data = val.data as Array<Playlist>
           let resolveCount = 0;
           let failedCount = 0;
-          data.forEach((play, index) => {
-            sendRequest("GET", 8001, "getplaylistinfo", { id: play.link, tkn: currUserAuth }, `playlistinfo${index}`);
 
-            get(`playlistinfo${index}`)
-              .then(val => {
-                if (cancel) {
-                  return;
-                }
+          getPlaylistHttp = Array(data.length);
+          data.forEach((play, index) => {
+            getPlaylistHttp[index] = sendRequestAsync("GET", 8001, "getplaylistinfo", { id: play.link, tkn: currUserAuth }, `playlistinfo${index}`);
+
+            getPlaylistHttp[index].onreadystatechange = e => {
+              if (getPlaylistHttp[index].readyState == 4) {
+                val = getPlaylistHttp[index].response;
                 if (val) {
                   try {
                     let playlistInfo = JSON.parse(val);
                     data[index].name = playlistInfo.name;
                     data[index].link = playlistInfo.external_urls.spotify;
                     resolveCount++;
-                  } catch {
+                  } catch (err) {
                     failedCount++;
                   } finally {
                     if (resolveCount == data.length - failedCount) {
+                      active = false;
                       setPlaylists(data);
                     }
                   }
 
                 }
-              });
-
+              }
+            }
           });
         }
-      })
-    return () => {
-      cancel = true;
+      }
     }
+    return () => {
+      getPlaylistHttp.forEach(element => {
+        element.onreadystatechange = () => { };
+      });
+      getUsersHttp.onreadystatechange = () => { };
+    };
   }, [refreshPlaylists]);
 
   //let playlists = [{name: "p1", link: "http://www.google.com", icon: null}, {name: "p2", link: "http://www.spotify.com", icon: null}];
@@ -137,17 +145,24 @@ const Playlists: React.FC = () => {
       </IonHeader>
       <IonContent fullscreen>
         <IonList>
-          {playlists.map((play: any, index: number) => {
-            return (
-              <IonItem key={index}>
-                <PlaylistBox name={play.name} link={play.link} icon={"icon"}></PlaylistBox>
-              </IonItem>
-            )
-          })}
+          {(active) ?
+                <IonItem>
+                  <IonText color="primary">
+                    <h2>Loading...</h2>
+                  </IonText>
+                </IonItem>
+            :
+            playlists.map((play: any, index: number) => {
+              return (
+                <IonItem key={index}>
+                  <PlaylistBox name={play.name} link={play.link} icon={"icon"}></PlaylistBox>
+                </IonItem>
+              )
+            })}
         </IonList>
         <IonFab vertical="top" horizontal="end" slot="fixed" edge>
-          <IonFabButton onClick={() => {setRefresh(Date.now())}}>
-            <IonIcon icon={refreshCircle} />
+          <IonFabButton onClick={() => { setRefresh(Date.now()) }}>
+            <IonIcon icon={(active) ? cloudDownloadSharp : refreshCircle} />
           </IonFabButton>
         </IonFab>
       </IonContent>

@@ -43,9 +43,30 @@ export function sendRequest(type: "GET" | "POST", port: number, route: string, p
   }
 
   http.onreadystatechange = (e) => {
-    if (storageKey) {
+    if (http.readyState == 4 && storageKey) {
       set(storageKey, http.response);
     }
   }
 }
 
+export function sendRequestAsync(type: "GET" | "POST", port: number, route: string, params_or_body: any, storageKey?: string) {
+  /** Don't set storageKey for POST requests */
+  const http = new XMLHttpRequest();
+  switch (type) {
+    case "GET": {
+      console.log("sending request ...")
+      const params = parse(params_or_body);
+      const url = `http://localhost:${port}/${route}?${params}`;
+      http.open(type, url);
+      http.send();
+      return http;
+    }
+    case "POST": {
+      const body = JSON.stringify(params_or_body);
+      const url = `http://localhost:${port}/${route}`;
+      http.open(type, url);
+      http.send(body);
+      return http;
+    }
+  }
+}
