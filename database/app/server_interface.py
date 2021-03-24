@@ -176,13 +176,22 @@ class DatabaseConnector:
 
         if(spotifyID != None):
             sql = """
-            SELECT playlists.*
-            FROM playlists 
-            INNER JOIN (
-            users INNER JOIN user_groups
-            ) 
-            ON playlists.group_id = user_groups.group_id
-            WHERE users.spotify_id = %(spotify_id)s
+                SELECT playlists.* FROM 
+                playlists
+                INNER JOIN
+                    (
+                    user_groups
+                    INNER JOIN
+                        (
+                            users INNER JOIN group_members ON users.user_id = group_members.user_id
+                        )
+                    ON user_groups.group_id = group_members.group_id
+                    )
+                ON 
+                (playlists.group_id = user_groups.group_id
+                    OR playlists.spotify_id = users.spotify_id
+                ) 
+                WHERE users.spotify_id = "samg_27"
             """
             val = {"spotify_id": spotifyID} 
         else:
@@ -341,6 +350,7 @@ class DatabaseConnector:
         user = res["data"]
         print("user : ",user)
         sql = """
+        
             SELECT user_groups.*
             FROM user_groups
             INNER JOIN (
