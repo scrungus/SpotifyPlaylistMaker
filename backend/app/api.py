@@ -61,11 +61,12 @@ print("STATE : ",state)
 #creates a playlist and fills it with some songs
 @app.get("/generatePlaylist", tags=['generatePlaylist'])
 async def generatePlaylist(id : List[str] = Query(None)):
+
     usernames = []
     tokens = []
     sp = []
     playlistNames = []
-
+    id = ["samg_27", "21s4kdps3olfltpj4yfuhqfya"]
     for idx in id:
         with httpx.Client() as client:
             user = client.get('http://spotifyplaylistmaker_database_1:8002/getUserBySpotifyID'+'?spotifyID='+idx).text

@@ -104,7 +104,7 @@ class DatabaseConnector:
             "data": userDataFormat(id=res[0][0], username=res[0][1], spotify_auth=res[0][2], spotify_id=res[0][3]),
             "error": ""}
 
-    def addUser(self, username: str, spotifyID: str, spotifyAuth=None, image=None):
+    def addUser(self, username: str, spotifyID: str, displayName: str, spotifyAuth=None, image=None):
         user = self.getUser(spotifyID=spotifyID)
         if(user["success"] == True):
             cursor = self.connection.cursor()
@@ -115,9 +115,12 @@ class DatabaseConnector:
             self.connection.commit()
             return {"success": True, "error": ""}
 
-        sql = "INSERT INTO users (username, spotify_auth, spotify_id) VALUES (%(username)s, %(spotify_auth)s, %(spotify_id)s)"
+        sql = "INSERT INTO users (username, spotify_auth, spotify_id, display_name) VALUES (%(username)s, %(spotify_auth)s, %(spotify_id)s, %(display_name)s)"
         val = {"username": username,
-               "spotify_auth": spotifyAuth, "spotify_id": spotifyID}
+               "spotify_auth": spotifyAuth, 
+               "spotify_id": spotifyID,
+               "display_name": displayName
+               }
         try:
             self.connection.cursor().execute(sql, val)
         except mysql.connector.errors.IntegrityError:
