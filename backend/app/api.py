@@ -2,6 +2,7 @@ from fastapi import FastAPI,Query
 from starlette.requests import Request
 from fastapi.middleware.cors import CORSMiddleware
 import spotipy
+from pydantic import BaseModel
 from spotipy import oauth2, util
 from spotipy.oauth2 import SpotifyClientCredentials
 from spotipy.oauth2 import SpotifyOAuth
@@ -58,21 +59,23 @@ app.add_middleware(
 
 print("STATE : ",state)
 
+class generatePlaylistReq(BaseModel):
+    id: list
+ 
 #creates a playlist and fills it with some songs
-@app.get("/generatePlaylist", tags=['generatePlaylist'])
-async def generatePlaylist(id : List[str] = Query(None)):
-
+@app.post("/generatePlaylist", tags=['generatePlaylist'])
+async def generatePlaylist(req: generatePlaylistReq):
+    id = req.id
     usernames = []
     tokens = []
     sp = []
     playlistNames = []
-    id = ["samg_27", "21s4kdps3olfltpj4yfuhqfya"]
     for idx in id:
         with httpx.Client() as client:
             user = client.get('http://spotifyplaylistmaker_database_1:8002/getUserBySpotifyID'+'?spotifyID='+idx).text
         user = json.loads(user)
         print(user)
-        usernames.append(user['data']['username'])
+        usernames.append(user['data']['spotify_id'])
         tokens.append(user['data']['spotify_auth'])
 
     reducedArtists = []
@@ -102,8 +105,9 @@ async def generatePlaylist(id : List[str] = Query(None)):
             playlistNames.append('Group Playlist ' + str(latestPlaylist + 1))
 
     # get 5 most common artists from each user
+    
+    createdPlaylist = sp[0].user_playlist_create(usernames[0], playlistNames[0], public=False, collaborative=True, description=playlistDescription)
     for grp_member in range(len(tokens)):
-        createdPlaylist = sp[grp_member].user_playlist_create(usernames[grp_member], playlistNames[grp_member], public=False, collaborative=True, description=playlistDescription)
         allArtists = []
         playlists = sp[grp_member].user_playlists(usernames[grp_member])
         for playlist in playlists['items']:
@@ -114,21 +118,22 @@ async def generatePlaylist(id : List[str] = Query(None)):
                     track = item['track']
                     if(track['artists'][0]['uri'] != None):
                         allArtists.append(track['artists'][0]['uri'])
-                    
+                
         reducedArtists += Counter(allArtists).most_common(5)
+
     for i, artist in enumerate(reducedArtists):
         reducedArtists[i] = reducedArtists[i][0]
 
     # get recommendation for group
-    print(reducedArtists)
-    tracks = spot.recommendations(seed_artists=reducedArtists, limit=20)
+    reducedArtists = reducedArtists[:5]
+    tracks = spot.recommendations(seed_artists=reducedArtists, limit=50)
     for track in tracks['tracks']:
        track_list.append(track['uri'])
 
     # add recommendation for all users
     spot.playlist_add_items(createdPlaylist['uri'], track_list)
     for grp_member in range(len(tokens)):
-        if grp_member != 1:
+        if grp_member != 0:
             sp[grp_member].user_playlist_follow_playlist(usernames[grp_member], playlist_id=createdPlaylist['id'])
     a = spotipy.Spotify(tokens[0], auth_manager=SpotifyOAuth(client_id=clientID, client_secret=clientSecret, scope=scopes))
 
@@ -141,3 +146,4 @@ async def generatePlaylist(id : List[str] = Query(None)):
 async def getplaylistinfo(id : str, tkn : str):
     sp = spotipy.Spotify(tkn, auth_manager=SpotifyOAuth(client_id=clientID, client_secret=clientSecret, scope=scopes))
     return sp.playlist(playlist_id=id)
+

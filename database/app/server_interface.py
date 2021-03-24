@@ -307,7 +307,7 @@ class DatabaseConnector:
         for ID in userIDs:
             res = self.getUser(id=ID[0])["data"]
             if(res and len(res) > 0):
-                users.append({"id": res["id"], "username": res["username"]})
+                users.append({"id": res["spotify_id"], "username": res["username"]})
         
 
 
