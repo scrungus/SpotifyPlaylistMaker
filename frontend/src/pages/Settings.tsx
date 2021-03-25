@@ -23,7 +23,7 @@ const Settings: React.FC = () => {
       if(http.readyState != 4){
         return;
       }
-      //window.location.href = "/";
+      window.location.href = "/";
     }
   }
 
